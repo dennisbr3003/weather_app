@@ -1,0 +1,8 @@
+<resources>
+    <string name="_app_name">Weather App</string>
+    <string name="_main">Main</string>
+    <string name="_weather_in">Weather in...</string>
+    <string name="_city">City</string>
+    <string name="_local_weather">Local weather</string>
+    <string name="_location">Location</string>
+</resources>
