@@ -5,4 +5,16 @@
     <string name="_city">City</string>
     <string name="_local_weather">Local weather</string>
     <string name="_location">Location</string>
+    <string name="_25_c">25 C</string>
+    <string name="_pressure">Pressure</string>
+    <string name="_dummy_condition">Cloudy and occ. showers</string>
+    <string name="_details">Details</string>
+    <string name="_humidity">Humidity</string>
+    <string name="_max_temp">Max. Temp.</string>
+    <string name="_min_temp">Min. Temp.</string>
+    <string name="_wind">Wind</string>
+    <string name="_50">50%</string>
+    <string name="_15_c">15 C</string>
+    <string name="_1096">1096</string>
+    <string name="_4">4</string>
 </resources>

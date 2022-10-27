@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/imageViewTab1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:contentDescription="@string/_city"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,14 +17,14 @@
 
     <TextView
         android:id="@+id/textViewTab1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="2dp"
+        android:paddingTop="3dp"
         android:text="@string/_weather_in"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewTab1"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
