@@ -1,4 +1,4 @@
-package com.dennis_brink.android.myweatherapp;
+package com.dennis_brink.android.myweatherapp.fragments;
 
 import android.os.Bundle;
 
@@ -13,6 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dennis_brink.android.myweatherapp.AppConfig;
+import com.dennis_brink.android.myweatherapp.R;
+import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
+import com.dennis_brink.android.myweatherapp.RetrofitWeather;
+import com.dennis_brink.android.myweatherapp.WeatherApi;
 import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
 import com.squareup.picasso.Picasso;
 

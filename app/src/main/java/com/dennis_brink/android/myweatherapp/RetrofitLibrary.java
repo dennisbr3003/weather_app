@@ -34,7 +34,7 @@ public class RetrofitLibrary {
 
         Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() lat/lon: " + lat + " " + lon);
 
-        Call<OpenWeatherAirQuality> call = weatherApi.getWeatherAirQuality(lat, lon);
+        Call<OpenWeatherAirQuality> call = weatherApi.getWeatherAirQuality(lat, lon, AppConfig.getInstance().getApi_key());
         call.enqueue(new Callback<OpenWeatherAirQuality>() {
             @Override
             public void onResponse(Call<OpenWeatherAirQuality> call, Response<OpenWeatherAirQuality> response) {

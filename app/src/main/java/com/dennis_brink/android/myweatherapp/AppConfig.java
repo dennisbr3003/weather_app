@@ -10,6 +10,7 @@ public class AppConfig {
     private double slat;
     private String location;
     private String slocation;
+    private String api_key;
 
     private AppConfig() {
     }
@@ -66,6 +67,14 @@ public class AppConfig {
         this.slocation = slocation;
     }
 
+    public String getApi_key() {
+        return api_key;
+    }
+
+    public void setApi_key(String api_key) {
+        this.api_key = api_key;
+    }
+
     @Override
     public String toString() {
         return "AppConfig{" +
@@ -75,6 +84,7 @@ public class AppConfig {
                 ", slat=" + slat +
                 ", location='" + location + '\'' +
                 ", slocation='" + slocation + '\'' +
+                ", api_key='" + api_key + '\'' +
                 '}';
     }
 }

@@ -1,4 +1,4 @@
-package com.dennis_brink.android.myweatherapp;
+package com.dennis_brink.android.myweatherapp.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -24,7 +24,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.dennis_brink.android.myweatherapp.model_airquality.OpenWeatherAirQuality;
+import com.dennis_brink.android.myweatherapp.AppConfig;
+import com.dennis_brink.android.myweatherapp.R;
+import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
+import com.dennis_brink.android.myweatherapp.RetrofitWeather;
+import com.dennis_brink.android.myweatherapp.WeatherApi;
 import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
 import com.squareup.picasso.Picasso;
 
@@ -34,6 +38,7 @@ import java.util.Calendar;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Query;
 
 public class FragmentMain extends Fragment {
 
@@ -166,7 +171,7 @@ public class FragmentMain extends Fragment {
 
         Log.d("DENNIS_B", "getWeatherData() lat/lon: " + AppConfig.getInstance().getLat() + " " + AppConfig.getInstance().getLon());
 
-        Call<OpenWeatherMap> call = weatherApi.getWeatherWithLocation(AppConfig.getInstance().getLat(), AppConfig.getInstance().getLon());
+        Call<OpenWeatherMap> call = weatherApi.getWeatherWithLocation(AppConfig.getInstance().getLat(), AppConfig.getInstance().getLon(),AppConfig.getInstance().getApi_key());
         call.enqueue(new Callback<OpenWeatherMap>() {
             @Override
             public void onResponse(Call<OpenWeatherMap> call, Response<OpenWeatherMap> response) {

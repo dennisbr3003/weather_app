@@ -6,6 +6,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.dennis_brink.android.myweatherapp.fragments.FragmentCity;
+import com.dennis_brink.android.myweatherapp.fragments.FragmentForecast;
+import com.dennis_brink.android.myweatherapp.fragments.FragmentMain;
+
 public class ViewPagerMainAdapter extends FragmentStateAdapter {
 
     public ViewPagerMainAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
@@ -21,6 +25,9 @@ public class ViewPagerMainAdapter extends FragmentStateAdapter {
                 fragment = FragmentMain.newInstance();
                 break;
             case 1:
+                fragment = FragmentForecast.newInstance();
+                break;
+            case 2:
                 fragment = FragmentCity.newInstance();
                 break;
         }
@@ -29,6 +36,6 @@ public class ViewPagerMainAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 }
