@@ -93,7 +93,7 @@ public class FragmentCity extends Fragment {
 
         Log.d("DENNIS_B", AppConfig.getInstance().getLocation());
 
-        Call<OpenWeatherMap> call = weatherApi.getWeatherWithCityName(city);
+        Call<OpenWeatherMap> call = weatherApi.getWeatherWithCityName(city, AppConfig.getInstance().getApi_key());
         call.enqueue(new Callback<OpenWeatherMap>() {
             @Override
             public void onResponse(Call<OpenWeatherMap> call, Response<OpenWeatherMap> response) {
@@ -117,7 +117,7 @@ public class FragmentCity extends Fragment {
 
                         Log.d("DENNIS_B", AppConfig.getInstance().toString());
 
-                        RetrofitLibrary.getPollutionData("city_search", imgList);
+                        RetrofitLibrary.getPollutionData("city_search", imgList, getContext());
 
                         String iconCode = response.body().getWeather().get(0).getIcon();
                         Log.d("DENNIS_B", "Icon: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");

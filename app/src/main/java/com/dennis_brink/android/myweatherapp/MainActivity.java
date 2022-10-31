@@ -15,6 +15,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.dennis_brink.android.myweatherapp.model_config.OpenWeatherConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,38 +44,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getAPIkey();
-        // dit moet naar een aparte proc, lon en lat moet overal beschikbaar zijn
-        /*
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onProviderEnabled(@NonNull String provider) {
-                LocationListener.super.onProviderEnabled(provider);
-            }
 
-            @Override
-            public void onProviderDisabled(@NonNull String provider) {
-                LocationListener.super.onProviderDisabled(provider);
-            }
-
-            @Override
-            public void onLocationChanged(@NonNull Location location) { // user location
-                lat = location.getLatitude();
-                lon = location.getLongitude();
-                Log.d("DENNIS_B", "Latitude " + lat + " Longitude " + lon);
-                AppConfig.getInstance().setLat(lat);
-                AppConfig.getInstance().setLon(lon);
-                Log.d("DENNIS_B", "Secured values: " + AppConfig.getInstance().toString());
-            }
-        };
-        */
-        /*
+        // ask for permission to access user location if needed
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        } else {
-           locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 50, locationListener);
         }
-        */
+
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.viewPagerMain);
 
@@ -113,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             in = am.open("datasource.config.json");
         } catch (IOException e) {
-            Log.d("DENNIS_B", "getApiKey() error (IOException) : " + e.getLocalizedMessage());
+            Log.d("DENNIS_B", "MainActivity.getApiKey(): error (IOException) : " + e.getLocalizedMessage());
             return;
         }
 
@@ -124,11 +99,11 @@ public class MainActivity extends AppCompatActivity {
                 str.append(line.replaceAll("\\s", ""));
             }
         } catch(Exception e) {
-            Log.d("DENNIS_B", "getApiKey() error (Exception) : " + e.getLocalizedMessage() + e.getMessage());
+            Log.d("DENNIS_B", "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage() + e.getMessage());
             return;
         }
 
-        Log.d("DENNIS_B", "getApiKey() str : " + str);
+        Log.d("DENNIS_B", "MainActivity.getApiKey(): string : " + str);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -136,22 +111,26 @@ public class MainActivity extends AppCompatActivity {
             Log.d("DENNIS_B", "getApiKey() key : " + openWeatherConfig.getDatasource().getKey());
             AppConfig.getInstance().setApi_key(openWeatherConfig.getDatasource().getKey());
         } catch (JsonProcessingException e) {
-            Log.d("DENNIS_B", "getApiKey() error (JsonProcessingException) : " + e.getLocalizedMessage());
+            Log.d("DENNIS_B", "MainActivity.getApiKey(): error (JsonProcessingException) : " + e.getLocalizedMessage());
             return;
         } catch (Exception e) {
-            Log.d("DENNIS_B", "getApiKey() error (Exception) : " + e.getLocalizedMessage());
+            Log.d("DENNIS_B", "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage());
             return;
         }
     }
-/*
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(requestCode == 1 && permissions.length > 0 && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 50, locationListener);
+            // granted
+        } else {
+            // no permission to access user location. Shut down.
+            Toast.makeText(this, "Access to location is needed in order to get data", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
     }
- */
+
 }

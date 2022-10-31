@@ -24,7 +24,7 @@ public interface WeatherApi {
     // we use weather?q=Helmond,NL&appid=eda35914aa73c5ac26a4d657718b1dbc&units=metric
     // cityname and country will be variables but will be put in one string value if applicable
     @GET("weather?&units=metric")
-    Call<OpenWeatherMap>getWeatherWithCityName(@Query("q")String name);
+    Call<OpenWeatherMap>getWeatherWithCityName(@Query("q")String name, @Query("appid")String key);
 
     // getting current air quality data from this URL
     // https://api.openweathermap.org/data/2.5/air_pollution?lat=51.45702&lon=5.63827&appid=eda35914aa73c5ac26a4d657718b1dbc

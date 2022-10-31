@@ -157,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:textColor="@color/Black"
-                android:text="Air Quality"
+                android:text="@string/_air_quality"
                 android:textSize="24sp"/>
 
         </LinearLayout>
@@ -222,50 +222,53 @@
 
                 <ImageView
                     android:id="@+id/star1"
-                    android:layout_marginTop="5dp"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:contentDescription="star1"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
-                    android:src="@drawable/star_yellow" />
+                    android:src="@drawable/star_yellow"
+                    tools:ignore="ImageContrastCheck" />
 
                 <ImageView
                     android:id="@+id/star2"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:contentDescription="star1"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
-                    android:src="@drawable/star_yellow" />
+                    android:src="@drawable/star_yellow"
+                    tools:ignore="ImageContrastCheck" />
 
                 <ImageView
                     android:id="@+id/star3"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:contentDescription="star1"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
-                    android:src="@drawable/star_yellow" />
+                    android:src="@drawable/star_yellow"
+                    tools:ignore="ImageContrastCheck" />
 
                 <ImageView
                     android:id="@+id/star4"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:contentDescription="star1"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
                     android:src="@drawable/star_grey" />
 
                 <ImageView
                     android:id="@+id/star5"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:contentDescription="star1"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
                     android:src="@drawable/star_grey" />
 
