@@ -80,7 +80,19 @@ public class RetrofitLibrary {
 
     }
 
-    public static void getWeatherDataLocal(String type, double lat, double lon, ArrayList<ImageView> rating, Map<String, TextView> weatherData, ImageView icon, Context context){
+    public static void getWeatherData(String type, double lat, double lon, ArrayList<ImageView>rating, Map<String, TextView> weatherData, ImageView icon, Context context){
+
+        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherData() type: " + type);
+
+        switch(type){
+            case "local":
+                getWeatherDataLocal(lat, lon, rating, weatherData, icon, context);
+                break;
+        }
+
+    }
+
+    private static void getWeatherDataLocal(double lat, double lon, ArrayList<ImageView> rating, Map<String, TextView> weatherData, ImageView icon, Context context){
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
 
@@ -98,7 +110,7 @@ public class RetrofitLibrary {
                     Log.d("DENNIS_B", response.toString());
                     Log.d("DENNIS_B", response.body().toString());
 
-                    loadValuesIntoViews(type, weatherData, response, icon, context);
+                    loadValuesIntoViews("local", weatherData, response, icon, context);
 
                 }catch(Exception e){
                     Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather data: " + e.getLocalizedMessage());
@@ -109,39 +121,6 @@ public class RetrofitLibrary {
             @Override
             public void onFailure(Call<OpenWeatherMap> call, Throwable t) {
                 Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): Retrofit did not return any weather data" + t.getLocalizedMessage());
-            }
-        });
-
-    }
-
-    public static void getWeatherDataCity(String type, String city, ArrayList<ImageView> rating, Map<String, TextView> weatherData, ImageView icon, Context context){
-
-        WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
-
-        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataCity() city : " + city);
-        Call<OpenWeatherMap> call = weatherApi.getWeatherWithCityName(city, AppConfig.getInstance().getApi_key());
-        call.enqueue(new Callback<OpenWeatherMap>() {
-            @Override
-            public void onResponse(Call<OpenWeatherMap> call, Response<OpenWeatherMap> response) {
-
-                try {
-
-                    RetrofitLibrary.getPollutionData(response.body().getCoord().getLat(), response.body().getCoord().getLat(), rating, context);
-
-                    Log.d("DENNIS_B", response.toString());
-                    Log.d("DENNIS_B", response.body().toString());
-
-                    loadValuesIntoViews(type, weatherData, response, icon, context);
-
-                }catch(Exception e){
-                    Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataCity(): error loading weather data: " + e.getLocalizedMessage());
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<OpenWeatherMap> call, Throwable t) {
-                Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataCity(): Retrofit did not return any weather data" + t.getLocalizedMessage());
             }
         });
 
@@ -169,8 +148,6 @@ public class RetrofitLibrary {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() weather icon loaded: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");
                         if(type.equals("local")) {
                             broadcastProgressBarAlert(context);
-                        } else {
-                            broadcastProgressBarAlert2(context);
                         }
                     }
 
@@ -180,8 +157,6 @@ public class RetrofitLibrary {
                         icon.setImageResource(R.mipmap.image870);
                         if(type.equals("local")) {
                             broadcastProgressBarAlert(context);
-                        } else {
-                            broadcastProgressBarAlert2(context);
                         }
                     }
                 });
@@ -191,15 +166,6 @@ public class RetrofitLibrary {
     private static void broadcastProgressBarAlert(Context context) {
 
         Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastProgressBarAlert(): sending 'STOP_PROGRESS_BAR' "));
-        Intent i = new Intent();
-        i.setAction("STOP_PROGRESS_BAR");
-        context.sendBroadcast(i);
-
-    }
-
-    private static void broadcastProgressBarAlert2(Context context) {
-
-        Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastProgressBarAlert(): sending 'STOP_PROGRESS_BAR_CITY' "));
         Intent i = new Intent();
         i.setAction("STOP_PROGRESS_BAR");
         context.sendBroadcast(i);
