@@ -57,9 +57,9 @@ public class FragmentForecast extends Fragment {
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
 
-        Log.d("DENNIS_B", "getWeatherForecastData() lat/lon: " + AppConfig.getInstance().getLat() + " " + AppConfig.getInstance().getLon());
+        Log.d("DENNIS_B", "getWeatherForecastData() lat/lon: 51.4574544 / 5.6377686");
 
-        Call<OpenWeatherForecast> call = weatherApi.getWeatherForecast(AppConfig.getInstance().getLat(), AppConfig.getInstance().getLon(), "eda35914aa73c5ac26a4d657718b1dbc");
+        Call<OpenWeatherForecast> call = weatherApi.getWeatherForecast(51.4574544, 5.6377686, "eda35914aa73c5ac26a4d657718b1dbc");
         call.enqueue(new Callback<OpenWeatherForecast>() {
             @Override
             public void onResponse(Call<OpenWeatherForecast> call, Response<OpenWeatherForecast> response) {
