@@ -83,7 +83,7 @@ public class FragmentMain extends Fragment implements IWeatherListener {
                 lat = location.getLatitude();
                 lon = location.getLongitude();
                 Log.d("DENNIS_B", "FragmentMain.onStart(): last known location lat/lon " + lat + "/" + lon);
-                RetrofitLibrary.getWeatherData("local", lat, lon, rating, weatherData, imageViewIcon, getContext());
+                RetrofitLibrary.getWeatherDataLocal("local", lat, lon, rating, weatherData, imageViewIcon, getContext());
 
             }
             else {
@@ -246,7 +246,7 @@ public class FragmentMain extends Fragment implements IWeatherListener {
                 lon = location.getLongitude();
                 Log.d("DENNIS_B", "FragmentMain.setupLocationListener().onLocationChanged(): latitude " + lat + " longitude " + lon);
 
-                RetrofitLibrary.getWeatherData("local", lat, lon, rating, weatherData, imageViewIcon, getContext());
+                RetrofitLibrary.getWeatherDataLocal("local", lat, lon, rating, weatherData, imageViewIcon, getContext());
 
             }
         };
