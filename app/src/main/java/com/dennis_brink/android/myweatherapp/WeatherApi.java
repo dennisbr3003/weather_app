@@ -44,7 +44,7 @@ public interface WeatherApi {
     */
 
     // appid=eda35914aa73c5ac26a4d657718b1dbc
-    @GET("forecast?")
+    @GET("forecast?&units=metric")
     Call<OpenWeatherForecast>getWeatherForecast(@Query("lat")double lat, @Query("lon")double lon, @Query("appid")String key);
 
 }

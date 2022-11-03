@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dennis_brink.android.myweatherapp.AppConfig;
+import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
@@ -58,6 +59,7 @@ public class FragmentMain extends Fragment implements IWeatherListener {
 
     private ArrayList<ImageView> rating = new ArrayList<>();
     private Map<String, TextView> weatherData = new HashMap<>();
+    private Map<String, TextView> weatherLabels = new HashMap<>();
 
     public static FragmentMain newInstance() {
         return new FragmentMain();
@@ -159,6 +161,7 @@ public class FragmentMain extends Fragment implements IWeatherListener {
 
         setupWeatherData(view);
         setupRating(view);
+        setupWeatherLabels(view);
 
         return view;
 
@@ -200,7 +203,36 @@ public class FragmentMain extends Fragment implements IWeatherListener {
         weatherData.put("pressure", textPressure);
         weatherData.put("temp", textTemp);
 
+        ApplicationLibrary.setColorTextView(weatherData);
+
     }
+
+    private void setupWeatherLabels(View view){
+
+        TextView textLabelHumidity, textLabelMaxTemp, textLabelMinTemp,
+                 textLabelPressure, textLabelWind, textLabelAirQuality,
+                 textLabelDetails;
+
+        textLabelHumidity = view.findViewById(R.id.textViewLabelHumidity);
+        textLabelWind = view.findViewById(R.id.textViewLabelWind);
+        textLabelMaxTemp = view.findViewById(R.id.textViewLabelMaxTemp);
+        textLabelMinTemp = view.findViewById(R.id.textViewLabelMinTemp);
+        textLabelPressure = view.findViewById(R.id.textViewLabelPressure);
+        textLabelAirQuality = view.findViewById(R.id.textViewLabelAirquality);
+        textLabelDetails = view.findViewById(R.id.textViewLabelDetails);
+
+        weatherLabels.put("humidity", textLabelHumidity);
+        weatherLabels.put("wind", textLabelWind);
+        weatherLabels.put("maxtemp", textLabelMaxTemp);
+        weatherLabels.put("mintemp", textLabelMinTemp);
+        weatherLabels.put("pressure", textLabelPressure);
+        weatherLabels.put("airquality", textLabelAirQuality);
+        weatherLabels.put("details", textLabelDetails);
+
+        ApplicationLibrary.setColorTextView(weatherLabels);
+
+    }
+
 
     private void setupRating(View view){
 

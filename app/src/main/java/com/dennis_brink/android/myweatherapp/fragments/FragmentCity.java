@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dennis_brink.android.myweatherapp.AppConfig;
+import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
@@ -34,12 +35,12 @@ import retrofit2.Response;
 
 public class FragmentCity extends Fragment implements IWeatherListener {
 
-    private EditText editTextSearch;
-    private ImageView imageViewSearch, imageViewIconCity;
+    private ImageView imageViewIconCity;
     Receiver receiver = null;
 
     private ArrayList<ImageView> rating = new ArrayList<>();
     private Map<String, TextView> weatherData = new HashMap<>();
+    private Map<String, TextView> weatherLabels = new HashMap<>();
 
     public static FragmentCity newInstance() {
         return new FragmentCity();
@@ -49,9 +50,6 @@ public class FragmentCity extends Fragment implements IWeatherListener {
     public void onStart() {
         super.onStart();
         Log.d("DENNIS_B", "FragmentCity onStart()");
-        //getWeatherData(AppConfig.getInstance().getLocation());
-        Log.d("DENNIS_B", "FragmentCity onStart() completed");
-
     }
 
     @Override
@@ -86,27 +84,20 @@ public class FragmentCity extends Fragment implements IWeatherListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_city, container, false);
 
-        // do stuff here like in an Activity's onCreate
-
-        editTextSearch = view.findViewById(R.id.editTextSearch);
-        imageViewSearch = view.findViewById(R.id.imageViewIconCitySearch);
         imageViewIconCity = view.findViewById(R.id.imageViewIconCity);
 
         setupWeatherData(view);
         setupRating(view);
-
-        imageViewSearch.setOnClickListener(view1 -> {
-            if(!(editTextSearch.getText().toString().isEmpty() || editTextSearch.getText().toString() == "City")){
-                RetrofitLibrary.getWeatherDataCity(editTextSearch.getText().toString(), rating, weatherData, imageViewIconCity, getContext());
-            }
-            editTextSearch.setText("");
-        });
+        setupWeatherLabels(view);
+        setupSearchText(view);
 
         return view;
     }
+
     private void setupWeatherData(View view){
 
         TextView textHumidityCity, textMaxTempCity, textMinTempCity, textPressureCity,
@@ -139,6 +130,54 @@ public class FragmentCity extends Fragment implements IWeatherListener {
         weatherData.put("pressure", textPressureCity);
         weatherData.put("temp", textTempCity);
 
+        ApplicationLibrary.setColorTextView(weatherData);
+
+    }
+
+    private void setupWeatherLabels(View view){
+
+        TextView textLabelHumidityCity, textLabelMaxTempCity, textLabelMinTempCity,
+                 textLabelPressureCity, textLabelWindCity, textLabelAirQualityCity,
+                 textLabelDetailsCity;
+
+        textLabelHumidityCity = view.findViewById(R.id.textViewLabelHumidityCity);
+        textLabelWindCity = view.findViewById(R.id.textViewLabelWindCity);
+        textLabelMaxTempCity = view.findViewById(R.id.textViewLabelMaxTempCity);
+        textLabelMinTempCity = view.findViewById(R.id.textViewLabelMinTempCity);
+        textLabelPressureCity = view.findViewById(R.id.textViewLabelPressureCity);
+        textLabelAirQualityCity = view.findViewById(R.id.textViewLabelAirqualityCity);
+        textLabelDetailsCity = view.findViewById(R.id.textViewLabelDetailsCity);
+
+        weatherLabels.put("humidity", textLabelHumidityCity);
+        weatherLabels.put("wind", textLabelWindCity);
+        weatherLabels.put("maxtemp", textLabelMaxTempCity);
+        weatherLabels.put("mintemp", textLabelMinTempCity);
+        weatherLabels.put("pressure", textLabelPressureCity);
+        weatherLabels.put("airquality", textLabelAirQualityCity);
+        weatherLabels.put("details", textLabelDetailsCity);
+
+        ApplicationLibrary.setColorTextView(weatherLabels);
+
+    }
+
+    private void setupSearchText(View view){
+
+        EditText editTextSearch;
+        ImageView imageViewSearch;
+
+        editTextSearch = view.findViewById(R.id.editTextSearch);
+        imageViewSearch = view.findViewById(R.id.imageViewIconCitySearch);
+
+        imageViewSearch.setOnClickListener(view1 -> {
+            if(!(editTextSearch.getText().toString().isEmpty() || editTextSearch.getText().toString() == "City")){
+                RetrofitLibrary.getWeatherDataCity(editTextSearch.getText().toString(), rating, weatherData, imageViewIconCity, getContext());
+            }
+            editTextSearch.setText("");
+        });
+
+        ApplicationLibrary.setColorView(editTextSearch);
+        ApplicationLibrary.setColorDrawableBackgroundStroke(editTextSearch);
+
     }
 
     private void setupRating(View view){
@@ -168,5 +207,6 @@ public class FragmentCity extends Fragment implements IWeatherListener {
     public void stopProgressBar() {
         Log.d("DENNIS_B", "FragmentCity.stopProgressBar() receiver reached");
     }
+
 
 }

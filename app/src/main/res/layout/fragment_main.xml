@@ -85,6 +85,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/textViewLabelDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
@@ -227,7 +228,7 @@
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
-                    android:src="@drawable/star_yellow"
+                    android:src="@drawable/star_grey"
                     tools:ignore="ImageContrastCheck" />
 
                 <ImageView
@@ -238,7 +239,7 @@
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
-                    android:src="@drawable/star_yellow"
+                    android:src="@drawable/star_grey"
                     tools:ignore="ImageContrastCheck" />
 
                 <ImageView
@@ -249,7 +250,7 @@
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
-                    android:src="@drawable/star_yellow"
+                    android:src="@drawable/star_grey"
                     tools:ignore="ImageContrastCheck" />
 
                 <ImageView

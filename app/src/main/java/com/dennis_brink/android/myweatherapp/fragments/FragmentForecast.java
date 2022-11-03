@@ -16,10 +16,13 @@ import com.dennis_brink.android.myweatherapp.ForecastAdapter;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.RetrofitWeather;
 import com.dennis_brink.android.myweatherapp.WeatherApi;
+import com.dennis_brink.android.myweatherapp.model_day.Day;
 import com.dennis_brink.android.myweatherapp.model_forecast.OpenWeatherForecast;
 import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -30,6 +33,7 @@ public class FragmentForecast extends Fragment {
 
     RecyclerView rvForecast;
     List<com.dennis_brink.android.myweatherapp.model_forecast.List> data;
+    List<Day> days = new ArrayList<>();
     ForecastAdapter adapter;
     public static FragmentForecast newInstance() {
         return new FragmentForecast();
@@ -70,7 +74,9 @@ public class FragmentForecast extends Fragment {
                     Log.d("DENNIS_B", response.body().toString());
 
                     data = response.body().getList(); // data is declared as List<ModelClass> globally
-                    adapter = new ForecastAdapter(data); // create adapter and move data in as parameter
+                    days = processForecast(data);
+                    Log.d("DENNIS_B", days.toString());
+                    adapter = new ForecastAdapter(days); // create adapter and move data in as parameter
                     rvForecast.setAdapter(adapter);
 
                 }catch(Exception e){
@@ -86,4 +92,57 @@ public class FragmentForecast extends Fragment {
         });
     }
 
+    private List<Day> processForecast(List<com.dennis_brink.android.myweatherapp.model_forecast.List> data) {
+
+        int intdate;
+        Calendar xdate = Calendar.getInstance();
+        String sdate="";
+        String cdate="";
+        int day_num=0;
+        Day day=null;
+
+        for(int i=0; i < data.size(); i++ ){
+
+            //Log.d("DENNIS_B", "iteration i " + i);
+
+            intdate = data.get(i).getDt();
+            xdate.setTimeInMillis(intdate * 1000L);
+            sdate = String.format("%02d-%02d-%04d",
+                    xdate.get(Calendar.DAY_OF_MONTH),
+                    xdate.get(Calendar.MONTH) + 1,
+                    xdate.get(Calendar.YEAR));
+
+            //Log.d("DENNIS_B", "sdate " + sdate);
+            //Log.d("DENNIS_B", "cdate " + cdate);
+
+            if(cdate.equals("") || (!cdate.equals("") && !cdate.equals(sdate))){
+
+                if(day!=null){
+                    Log.d("DENNIS_B", day.toString());
+                    days.add(day);
+                }
+
+                // create new day
+                cdate = sdate;
+                day = new Day();
+                day.setId(day_num);
+                day.setDayofweek(xdate.get(Calendar.DAY_OF_WEEK));
+                day.setDate(cdate);
+                day_num++;
+            }
+            // day is aangemaakt --> vullen
+            day.setHumidity(data.get(i).getMain().getHumidity());
+            day.setMaxtemp(data.get(i).getMain().getTempMax());
+            day.setMintemp(data.get(i).getMain().getTempMin());
+            day.setPressure(data.get(i).getMain().getPressure());
+            day.setTemp(data.get(i).getMain().getTemp());
+            day.setIcon(data.get(i).getWeather().get(0).getIcon());
+            day.setMeasurements(1);
+
+
+
+        }
+        days.add(day);
+        return days;
+    }
 }

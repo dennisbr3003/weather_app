@@ -101,6 +101,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/textViewLabelDetailsCity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="25dp"
@@ -243,7 +244,7 @@
                         android:layout_height="25dp"
                         android:contentDescription="star1"
                         android:scaleType="fitXY"
-                        android:src="@drawable/star_yellow" />
+                        android:src="@drawable/star_grey" />
 
                     <ImageView
                         android:id="@+id/star2city"
@@ -253,7 +254,7 @@
                         android:layout_height="25dp"
                         android:contentDescription="star1"
                         android:scaleType="fitXY"
-                        android:src="@drawable/star_yellow" />
+                        android:src="@drawable/star_grey" />
 
                     <ImageView
                         android:id="@+id/star3city"
@@ -263,7 +264,7 @@
                         android:layout_height="25dp"
                         android:contentDescription="star1"
                         android:scaleType="fitXY"
-                        android:src="@drawable/star_yellow" />
+                        android:src="@drawable/star_grey" />
 
                     <ImageView
                         android:id="@+id/star4city"

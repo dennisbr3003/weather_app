@@ -1,5 +1,12 @@
 package com.dennis_brink.android.myweatherapp;
 
+import static android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+import static android.content.res.Configuration.UI_MODE_NIGHT_NO;
+import static android.content.res.Configuration.UI_MODE_NIGHT_UNDEFINED;
+import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
+
+import android.util.Log;
+
 public class AppConfig {
 
     private static AppConfig instance = new AppConfig();
@@ -11,8 +18,10 @@ public class AppConfig {
     private String location;
     private String slocation;
     private String api_key;
+    private boolean darkThemeActive = false;
 
     private AppConfig() {
+        darkThemeActive = getDarkThemeActive();
     }
 
     public static AppConfig getInstance(){
@@ -75,16 +84,46 @@ public class AppConfig {
         this.api_key = api_key;
     }
 
+    public boolean isDarkThemeActive() {
+        return darkThemeActive;
+    }
+
+    public void setDarkThemeActive(boolean darkThemeActive) {
+        this.darkThemeActive = darkThemeActive;
+    }
+
+    private boolean getDarkThemeActive(){
+
+        Log.d("DENNIS_B", "Determine if dark theme is active");
+
+        int nightModeFlags;
+
+        nightModeFlags = Application.getContext().getResources().getConfiguration().uiMode & UI_MODE_NIGHT_MASK;
+
+        switch (nightModeFlags) {
+            case UI_MODE_NIGHT_YES:
+                Log.d("DENNIS_B", "UI_MODE_NIGHT_YES");
+                return true;
+            case UI_MODE_NIGHT_NO:
+                Log.d("DENNIS_B", "UI_MODE_NIGHT_NO");
+                return false;
+            case UI_MODE_NIGHT_UNDEFINED:
+                Log.d("DENNIS_B", "UI_MODE_NIGHT_UNDEFINED");
+                return false;
+            default:
+                throw new IllegalStateException("Unexpected value: " + nightModeFlags);
+        }
+
+    }
+
     @Override
     public String toString() {
         return "AppConfig{" +
-                "lon=" + lon +
-                ", lat=" + lat +
-                ", slon=" + slon +
-                ", slat=" + slat +
-                ", location='" + location + '\'' +
-                ", slocation='" + slocation + '\'' +
-                ", api_key='" + api_key + '\'' +
+                "api_key='" + api_key + '\'' +
+                ", darkThemeActive=" + darkThemeActive +
                 '}';
     }
+
+
+
 }

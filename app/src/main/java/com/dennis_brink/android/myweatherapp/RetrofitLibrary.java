@@ -21,7 +21,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RetrofitLibrary {
-
+/*
     public static void getPollutionData(String type, ArrayList<ImageView>rating, Context context){
 
         Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() type: " + type);
@@ -36,7 +36,7 @@ public class RetrofitLibrary {
         }
 
     }
-
+*/
     private static void getPollutionData(double lat, double lon, ArrayList<ImageView>rating, Context context){
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
