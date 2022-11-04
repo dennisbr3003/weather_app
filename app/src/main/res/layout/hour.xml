@@ -88,13 +88,13 @@
                 <ImageView
                     android:id="@+id/imageViewWind"
                     android:layout_width="25dp"
-                    android:layout_height="14dp"
+                    android:layout_height="20dp"
                     android:layout_marginStart="2dp"
                     android:scaleType="fitXY"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/wind" />
+                    app:srcCompat="@drawable/image4526" />
 
                 <TextView
                     android:id="@+id/textViewWindForceHour"
