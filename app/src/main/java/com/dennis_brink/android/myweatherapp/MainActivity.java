@@ -8,6 +8,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.location.Location;
@@ -125,11 +126,21 @@ public class MainActivity extends AppCompatActivity {
 
         if(requestCode == 1 && permissions.length > 0 && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             // granted
+            broadcastLocationPermission(this);
         } else {
             // no permission to access user location. Shut down.
             Toast.makeText(this, "Access to location is needed in order to get data", Toast.LENGTH_SHORT).show();
             finish();
         }
+
+    }
+
+    private static void broadcastLocationPermission(Context context) {
+
+        Log.d("DENNIS_B", String.format("MainActivity.broadcastLocationPermission(): sending 'LOCATION_PERMISSION_GRANTED' "));
+        Intent i = new Intent();
+        i.setAction("LOCATION_PERMISSION_GRANTED");
+        context.sendBroadcast(i);
 
     }
 

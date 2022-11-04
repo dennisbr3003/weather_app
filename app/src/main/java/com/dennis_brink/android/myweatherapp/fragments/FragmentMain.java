@@ -12,9 +12,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Looper;
 import android.util.Log;
@@ -25,31 +26,24 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.dennis_brink.android.myweatherapp.AppConfig;
 import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
+import com.dennis_brink.android.myweatherapp.IPermissionListener;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
 import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
-import com.dennis_brink.android.myweatherapp.RetrofitWeather;
-import com.dennis_brink.android.myweatherapp.WeatherApi;
-import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class FragmentMain extends Fragment implements IWeatherListener {
+public class FragmentMain extends Fragment implements IWeatherListener, IPermissionListener {
 
     LocationManager locationManager;
     LocationListener locationListener;
     Receiver receiver = null;
+    RecyclerView rvForecastHour;
 
     private ImageView imageViewIcon;
     private ProgressBar progressBar;
@@ -72,6 +66,21 @@ public class FragmentMain extends Fragment implements IWeatherListener {
         progressBar.setVisibility(View.VISIBLE);
         imageViewIcon.setVisibility(View.INVISIBLE);
 
+        if(receiver == null){
+            Log.d("DENNIS_B", "FragmentMain.onStart(): registering receiver");
+            receiver = new Receiver();
+            receiver.setWeatherListener(this);
+            receiver.setPermissionListener(this);
+        }
+        getActivity().registerReceiver(receiver, getFilter());
+
+        setupListenersAndInitData();
+
+        Log.d("DENNIS_B", "FragmentMain.onStart(): done");
+    }
+
+    private void setupListenersAndInitData(){
+
         setupLocationListener();
 
         // permission was already obtained in the main activity, so we do not ask for it here.
@@ -86,6 +95,7 @@ public class FragmentMain extends Fragment implements IWeatherListener {
                 lon = location.getLongitude();
                 Log.d("DENNIS_B", "FragmentMain.onStart(): last known location lat/lon " + lat + "/" + lon);
                 RetrofitLibrary.getWeatherDataLocal(lat, lon, rating, weatherData, imageViewIcon, getContext());
+                RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour);
 
             }
             else {
@@ -94,35 +104,26 @@ public class FragmentMain extends Fragment implements IWeatherListener {
             }
             Log.d("DENNIS_B", "FragmentMain.onStart(): setup listener to check every 500m by 50m");
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 50, locationListener); // set op the listener parameters
+        } else { // stop loading, something went wrong
+            stopProgressBar();
         }
-        Log.d("DENNIS_B", "FragmentMain.onStart(): done");
     }
+
 
     private IntentFilter getFilter(){
         IntentFilter intentFilter = new IntentFilter();
-        Log.d("DENNIS_B", "FragmentMain.getFilter(): Registering for broadcast action LOCAL_WEATHER_DATA_ERROR and STOP_PROGRESS_BAR");
+        Log.d("DENNIS_B", "FragmentMain.getFilter(): Registering for broadcast action LOCATION_PERMISSION_GRANTED, LOCAL_WEATHER_DATA_ERROR and STOP_PROGRESS_BAR");
         intentFilter.addAction("LOCAL_WEATHER_DATA_ERROR"); // only register receiver for this event
         intentFilter.addAction("STOP_PROGRESS_BAR");
+        intentFilter.addAction("LOCATION_PERMISSION_GRANTED");
         return intentFilter;
     }
 
-
     @Override
-    public void onResume() {
-        super.onResume();
-        if(receiver == null){
-            Log.d("DENNIS_B", "FragmentMain.onResume(): registering receiver");
-            receiver = new Receiver();
-            receiver.setWeatherListener(this);
-        }
-        getActivity().registerReceiver(receiver, getFilter());
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
+    public void onDestroy() {
+        super.onDestroy();
         if (receiver != null){
-            Log.d("DENNIS_B", "FragmentMain.onPause(): unregistering receiver");
+            Log.d("DENNIS_B", "FragmentMain.onDestroy(): unregistering receiver");
             getActivity().unregisterReceiver(receiver);
             receiver = null;
         }
@@ -158,6 +159,9 @@ public class FragmentMain extends Fragment implements IWeatherListener {
         // do stuff here like in an Activity's onCreate
         progressBar = view.findViewById(R.id.progressBar);
         imageViewIcon = view.findViewById(R.id.imageViewIcon);
+
+        rvForecastHour = view.findViewById(R.id.rvHours);
+        rvForecastHour.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         setupWeatherData(view);
         setupRating(view);
@@ -198,12 +202,13 @@ public class FragmentMain extends Fragment implements IWeatherListener {
         weatherData.put("condition", textCondition);
         weatherData.put("humidity", textHumidity);
         weatherData.put("wind", textWind);
-        weatherData.put("maxtemp", textMaxTemp);
-        weatherData.put("mintemp", textMinTemp);
         weatherData.put("pressure", textPressure);
         weatherData.put("temp", textTemp);
 
         ApplicationLibrary.setColorTextView(weatherData);
+
+        weatherData.put("maxtemp", textMaxTemp);
+        weatherData.put("mintemp", textMinTemp);
 
     }
 
@@ -215,19 +220,13 @@ public class FragmentMain extends Fragment implements IWeatherListener {
 
         textLabelHumidity = view.findViewById(R.id.textViewLabelHumidity);
         textLabelWind = view.findViewById(R.id.textViewLabelWind);
-        textLabelMaxTemp = view.findViewById(R.id.textViewLabelMaxTemp);
-        textLabelMinTemp = view.findViewById(R.id.textViewLabelMinTemp);
         textLabelPressure = view.findViewById(R.id.textViewLabelPressure);
         textLabelAirQuality = view.findViewById(R.id.textViewLabelAirquality);
-        textLabelDetails = view.findViewById(R.id.textViewLabelDetails);
 
         weatherLabels.put("humidity", textLabelHumidity);
         weatherLabels.put("wind", textLabelWind);
-        weatherLabels.put("maxtemp", textLabelMaxTemp);
-        weatherLabels.put("mintemp", textLabelMinTemp);
         weatherLabels.put("pressure", textLabelPressure);
         weatherLabels.put("airquality", textLabelAirQuality);
-        weatherLabels.put("details", textLabelDetails);
 
         ApplicationLibrary.setColorTextView(weatherLabels);
 
@@ -279,6 +278,7 @@ public class FragmentMain extends Fragment implements IWeatherListener {
                 Log.d("DENNIS_B", "FragmentMain.setupLocationListener().onLocationChanged(): latitude " + lat + " longitude " + lon);
 
                 RetrofitLibrary.getWeatherDataLocal(lat, lon, rating, weatherData, imageViewIcon, getContext());
+                RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour);
 
             }
         };
@@ -301,5 +301,12 @@ public class FragmentMain extends Fragment implements IWeatherListener {
         weatherData.get("temp").setVisibility(View.VISIBLE);
         weatherData.get("condition").setVisibility(View.VISIBLE);
         imageViewIcon.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void afterPermissionGranted() {
+        // permission granted so get data
+        Log.d("DENNIS_B", "FragmentMain.afterPermissionGranted() receiver reached");
+        setupListenersAndInitData();
     }
 }

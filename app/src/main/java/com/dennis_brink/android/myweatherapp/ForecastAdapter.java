@@ -41,7 +41,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
         icon = icon.replaceAll("n", "d");
 
         String finalIcon = icon;
-        
+
         Picasso.get().load("https://openweathermap.org/img/wn/" + icon + "@2x.png")
                 .into(holder.imageViewIcon, new com.squareup.picasso.Callback() {
                     @Override

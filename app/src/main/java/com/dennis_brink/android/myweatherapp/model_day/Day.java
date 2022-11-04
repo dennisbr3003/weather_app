@@ -1,12 +1,9 @@
 package com.dennis_brink.android.myweatherapp.model_day;
 
-import android.util.Log;
-
 import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Day {
@@ -26,9 +23,11 @@ public class Day {
     String day_display_abbreviated;
 
     private Map<String, Integer> weather_icon = new HashMap<>();
-    private static final DecimalFormat df = new DecimalFormat("0.00");
-    String dayNames[] = new DateFormatSymbols().getWeekdays();
-    String dayShortNames[] = new DateFormatSymbols().getShortWeekdays();
+
+    DateFormatSymbols symbols = new DateFormatSymbols(new Locale("en"));
+
+    String dayNames[] = symbols.getWeekdays();
+    String dayShortNames[] = symbols.getShortWeekdays();
 
     public Day() {
     }
@@ -165,7 +164,7 @@ public class Day {
 
     private double formatDecimals(double x){
 
-        String sx = String.format("%.2f", (temp / this.measurements));
+        String sx = String.format("%.2f", x);
         sx = sx.replaceAll(",", ".");
         double d = Double.parseDouble(sx);
         return d;

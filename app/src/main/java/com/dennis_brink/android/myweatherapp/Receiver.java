@@ -8,9 +8,14 @@ import android.util.Log;
 public class Receiver extends BroadcastReceiver {
 
     private IWeatherListener weatherListener;
+    private IPermissionListener permissionListener;
 
     public void setWeatherListener(IWeatherListener weatherListener){
         this.weatherListener = weatherListener;
+    }
+
+    public void setPermissionListener(IPermissionListener permissionListener){
+        this.permissionListener = permissionListener;
     }
 
     @Override
@@ -20,6 +25,12 @@ public class Receiver extends BroadcastReceiver {
         if(intent.getAction().equals("STOP_PROGRESS_BAR")) {
             if (weatherListener != null) {
                 weatherListener.stopProgressBar();
+            }
+        }
+
+        if(intent.getAction().equals("LOCATION_PERMISSION_GRANTED")) {
+            if (permissionListener != null) {
+                permissionListener.afterPermissionGranted();
             }
         }
 

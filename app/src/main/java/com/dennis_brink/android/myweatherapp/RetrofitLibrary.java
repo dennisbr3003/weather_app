@@ -3,17 +3,18 @@ package com.dennis_brink.android.myweatherapp;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.dennis_brink.android.myweatherapp.model_airquality.OpenWeatherAirQuality;
+import com.dennis_brink.android.myweatherapp.model_forecast.List;
+import com.dennis_brink.android.myweatherapp.model_forecast.OpenWeatherForecast;
 import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -21,22 +22,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RetrofitLibrary {
-/*
-    public static void getPollutionData(String type, ArrayList<ImageView>rating, Context context){
 
-        Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() type: " + type);
-
-        switch(type){
-            case "city_search":
-                getPollutionData(AppConfig.getInstance().getSlat(), AppConfig.getInstance().getSlon(), rating, context);
-                break;
-            case "local":
-                getPollutionData(AppConfig.getInstance().getLat(), AppConfig.getInstance().getLon(), rating, context);
-                break;
-        }
-
-    }
-*/
     private static void getPollutionData(double lat, double lon, ArrayList<ImageView>rating, Context context){
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
@@ -168,21 +154,53 @@ public class RetrofitLibrary {
                     @Override
                     public void onSuccess() {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() weather icon loaded: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");
-                        //if(type.equals("local") || type.equals("city")) {
-                            broadcastProgressBarAlert(context);
-                        //}
+                        broadcastProgressBarAlert(context);
                     }
 
                     @Override
                     public void onError(Exception e) {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather icon: " + e.getLocalizedMessage());
                         icon.setImageResource(R.mipmap.image870);
-                        //if(type.equals("local") || type.equals("city")) {
-                            broadcastProgressBarAlert(context);
-                        //}
+                        broadcastProgressBarAlert(context);
                     }
                 });
+    }
 
+    public static void getWeatherForecastData(double lat, double lon, RecyclerView recyclerView){
+
+        WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
+
+        Log.d("DENNIS_B", "getWeatherForecastData() lat/lon: " + lat + "/" + lon);
+
+        Call<OpenWeatherForecast> call = weatherApi.getWeatherForecast(lat, lon, AppConfig.getInstance().getApi_key());
+        call.enqueue(new Callback<OpenWeatherForecast>() {
+            @Override
+            public void onResponse(Call<OpenWeatherForecast> call, Response<OpenWeatherForecast> response) {
+
+
+                try {
+                    Log.d("DENNIS_B", response.toString());
+                    Log.d("DENNIS_B", response.body().toString());
+
+                    response.body().getList(); // data is declared as List<ModelClass> globally
+                    //days = processForecast(data);
+                    //Log.d("DENNIS_B", days.toString());
+                    //adapter = new ForecastAdapter(days); // create adapter and move data in as parameter
+                    //rvForecast.setAdapter(adapter);
+                    ForecastHourAdapter adapter = new ForecastHourAdapter(response.body().getList()); // create adapter and move data in as parameter
+                    recyclerView.setAdapter(adapter);
+
+                }catch(Exception e){
+                    Log.d("DENNIS_B", "Error loading weather forecast data: " + e.getLocalizedMessage());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<OpenWeatherForecast> call, Throwable t) {
+                Log.d("DENNIS_B", "Retrofit did not return any weather forecast data " + t.getLocalizedMessage());
+            }
+        });
     }
 
     private static void broadcastProgressBarAlert(Context context) {

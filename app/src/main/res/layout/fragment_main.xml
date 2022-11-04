@@ -84,20 +84,52 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textViewLabelDetails"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:text="@string/_details"
-        android:textColor="@color/Black"
-        android:textSize="30sp" />
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/textViewMinTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="7dp"
+            android:text="@string/_15_c"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/DodgerBlue"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewMaxTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="18dp"
+            android:text="@string/_25_c"
+            android:textAlignment="viewStart"
+            android:textColor="@color/OrangeRed"
+            android:textSize="24sp"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I"
+            android:textSize="48sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -105,6 +137,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="25dp"
             android:layout_marginTop="5dp"
+            android:gravity="right"
             android:orientation="vertical">
 
             <TextView
@@ -114,25 +147,7 @@
                 android:layout_marginTop="5dp"
                 android:text="@string/_humidity"
                 android:textColor="@color/Black"
-                android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/textViewLabelMaxTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/_max_temp"
-                android:textColor="@color/Black"
-                android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/textViewLabelMinTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/_min_temp"
-                android:textColor="@color/Black"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/textViewLabelPressure"
@@ -141,7 +156,7 @@
                 android:layout_marginTop="5dp"
                 android:text="@string/_pressure"
                 android:textColor="@color/Black"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/textViewLabelWind"
@@ -150,52 +165,48 @@
                 android:layout_marginTop="5dp"
                 android:text="@string/_wind"
                 android:textColor="@color/Black"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/textViewLabelAirquality"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/Black"
                 android:text="@string/_air_quality"
-                android:textSize="24sp"/>
+                android:textColor="@color/Black"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="14dp"
             android:layout_marginTop="5dp"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textViewHumidity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/_50"
-                android:textColor="@color/Black"
-                android:textSize="24sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textViewMaxTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/_25_c"
-                android:textColor="@color/Black"
-                android:textSize="24sp" />
+                <TextView
+                    android:id="@+id/textViewHumidity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/_50"
+                    android:textColor="@color/Black"
+                    android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/textViewMinTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/_15_c"
-                android:textColor="@color/Black"
-                android:textSize="24sp" />
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="35dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/humidity" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textViewPressure"
@@ -204,7 +215,7 @@
                 android:layout_marginTop="5dp"
                 android:text="@string/_1096"
                 android:textColor="@color/Black"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/textViewWind"
@@ -213,7 +224,7 @@
                 android:layout_marginTop="5dp"
                 android:text="@string/_4"
                 android:textColor="@color/Black"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -223,8 +234,8 @@
 
                 <ImageView
                     android:id="@+id/star1"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/_star1"
                     android:scaleType="fitXY"
@@ -233,8 +244,8 @@
 
                 <ImageView
                     android:id="@+id/star2"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/_star1"
@@ -244,8 +255,8 @@
 
                 <ImageView
                     android:id="@+id/star3"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/_star1"
@@ -255,8 +266,8 @@
 
                 <ImageView
                     android:id="@+id/star4"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/_star1"
@@ -265,8 +276,8 @@
 
                 <ImageView
                     android:id="@+id/star5"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:contentDescription="@string/_star1"
@@ -279,6 +290,23 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvHours"
+            android:layout_width="338dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/hour" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </LinearLayout>
