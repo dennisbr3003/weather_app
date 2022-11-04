@@ -214,9 +214,8 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
 
     private void setupWeatherLabels(View view){
 
-        TextView textLabelHumidity, textLabelMaxTemp, textLabelMinTemp,
-                 textLabelPressure, textLabelWind, textLabelAirQuality,
-                 textLabelDetails;
+        TextView textLabelHumidity,
+                 textLabelPressure, textLabelWind, textLabelAirQuality;
 
         textLabelHumidity = view.findViewById(R.id.textViewLabelHumidity);
         textLabelWind = view.findViewById(R.id.textViewLabelWind);

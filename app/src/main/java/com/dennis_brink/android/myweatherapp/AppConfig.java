@@ -18,62 +18,15 @@ public class AppConfig {
     private String location;
     private String slocation;
     private String api_key;
-    private boolean darkThemeActive = false;
+    private static boolean darkThemeActive = false;
 
     private AppConfig() {
-        darkThemeActive = getDarkThemeActive();
+
     }
 
     public static AppConfig getInstance(){
+        darkThemeActive = getDarkThemeActive();
         return instance;
-    }
-
-    public double getLon() {
-        return lon;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
-    }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public double getSlon() {
-        return slon;
-    }
-
-    public void setSlon(double slon) {
-        this.slon = slon;
-    }
-
-    public double getSlat() {
-        return slat;
-    }
-
-    public void setSlat(double slat) {
-        this.slat = slat;
-    }
-
-    public String getSlocation() {
-        return slocation;
-    }
-
-    public void setSlocation(String slocation) {
-        this.slocation = slocation;
     }
 
     public String getApi_key() {
@@ -88,11 +41,7 @@ public class AppConfig {
         return darkThemeActive;
     }
 
-    public void setDarkThemeActive(boolean darkThemeActive) {
-        this.darkThemeActive = darkThemeActive;
-    }
-
-    private boolean getDarkThemeActive(){
+    private static boolean getDarkThemeActive(){
 
         Log.d("DENNIS_B", "Determine if dark theme is active");
 

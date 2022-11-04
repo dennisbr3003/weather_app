@@ -42,12 +42,11 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linear_layout_city_city"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/textViewCityCity"
@@ -55,136 +54,175 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="7dp"
+            android:layout_marginStart="7dp"
+            android:layout_marginEnd="7dp"
             android:text="@string/_city"
             android:textAlignment="center"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progressBarCity"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textViewCityCity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageViewIconCity"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="25dp"
+            android:contentDescription="@string/_local_weather"
+            android:scaleType="fitXY"
+            android:src="@mipmap/image870" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:orientation="horizontal">
+            android:layout_marginStart="10dp"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imageViewIconCity"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginStart="25dp"
-                android:contentDescription="@string/_local_weather"
-                android:scaleType="fitXY"
-                android:src="@mipmap/image870" />
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/textViewTemperatureCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical">
+                android:layout_gravity="start"
+                android:text="@string/_25_c"
+                android:textColor="@color/Black"
+                android:textSize="50sp" />
 
-                <TextView
-                    android:id="@+id/textViewTemperatureCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="@string/_25_c"
-                    android:textColor="@color/Black"
-                    android:textSize="50sp" />
+            <TextView
+                android:id="@+id/textViewWeaterConditionCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="25dp"
+                android:text="@string/_dummy_condition"
+                android:textSize="22sp" />
 
-                <TextView
-                    android:id="@+id/textViewWeaterConditionCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="25dp"
-                    android:text="@string/_dummy_condition"
-                    android:textSize="22sp" />
-
-            </LinearLayout>
         </LinearLayout>
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
 
         <TextView
-            android:id="@+id/textViewLabelDetailsCity"
-            android:layout_width="match_parent"
+            android:id="@+id/textViewMinTempCity"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/_details"
-            android:textColor="@color/Black"
-            android:textSize="30sp" />
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="7dp"
+            android:text="@string/_15_c"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/DodgerBlue"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/textViewCity"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewMaxTempCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="18dp"
+            android:text="@string/_25_c"
+            android:textAlignment="viewStart"
+            android:textColor="@color/OrangeRed"
+            android:textSize="24sp"
+            app:layout_constraintStart_toEndOf="@+id/textViewCity"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I"
+            android:textSize="48sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="5dp"
+            android:gravity="right"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/textViewLabelHumidityCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
                 android:layout_marginTop="5dp"
-                android:orientation="vertical">
+                android:text="@string/_humidity"
+                android:textColor="@color/Black"
+                android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/textViewLabelHumidityCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/_humidity"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/textViewLabelMaxTempCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/_max_temp"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/textViewLabelMinTempCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/_min_temp"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/textViewLabelPressureCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/_pressure"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/textViewLabelWindCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/_wind"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/textViewLabelAirqualityCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@color/Black"
-                    android:text="Air Quality"
-                    android:textSize="24sp"/>
-
-            </LinearLayout>
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/textViewLabelPressureCity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:orientation="vertical">
+                android:text="@string/_pressure"
+                android:textColor="@color/Black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewLabelWindCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/_wind"
+                android:textColor="@color/Black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewLabelAirqualityCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/_air_quality"
+                android:textColor="@color/Black"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/textViewHumidityCity"
@@ -193,100 +231,92 @@
                     android:layout_marginTop="5dp"
                     android:text="@string/_50"
                     android:textColor="@color/Black"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/textViewMaxTempCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:id="@+id/imageView2City"
+                    android:layout_width="35dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginTop="5dp"
-                    android:text="@string/_25_c"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
+                    android:src="@drawable/humidity" />
+            </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textViewMinTempCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+            <TextView
+                android:id="@+id/textViewPressureCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/_1096"
+                android:textColor="@color/Black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewWindCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/_4"
+                android:textColor="@color/Black"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/star1City"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginTop="5dp"
-                    android:text="@string/_15_c"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
+                    android:contentDescription="@string/_star1"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/star_grey"
+                    tools:ignore="ImageContrastCheck" />
 
-                <TextView
-                    android:id="@+id/textViewPressureCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:id="@+id/star2City"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
-                    android:text="@string/_1096"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
+                    android:contentDescription="@string/_star1"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/star_grey"
+                    tools:ignore="ImageContrastCheck" />
 
-                <TextView
-                    android:id="@+id/textViewWindCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:id="@+id/star3City"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
-                    android:text="@string/_4"
-                    android:textColor="@color/Black"
-                    android:textSize="24sp" />
+                    android:contentDescription="@string/_star1"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/star_grey"
+                    tools:ignore="ImageContrastCheck" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:id="@+id/star4City"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
+                    android:contentDescription="@string/_star1"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/star_grey" />
 
-                    <ImageView
-                        android:id="@+id/star1city"
-                        android:layout_marginTop="5dp"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:contentDescription="star1"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/star_grey" />
-
-                    <ImageView
-                        android:id="@+id/star2city"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:contentDescription="star1"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/star_grey" />
-
-                    <ImageView
-                        android:id="@+id/star3city"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:contentDescription="star1"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/star_grey" />
-
-                    <ImageView
-                        android:id="@+id/star4city"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:contentDescription="star1"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/star_grey" />
-
-                    <ImageView
-                        android:id="@+id/star5city"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:contentDescription="star1"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/star_grey" />
-
-                </LinearLayout>
+                <ImageView
+                    android:id="@+id/star5City"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:contentDescription="@string/_star1"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/star_grey" />
 
             </LinearLayout>
 

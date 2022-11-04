@@ -12,26 +12,16 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.dennis_brink.android.myweatherapp.AppConfig;
 import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
 import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
-import com.dennis_brink.android.myweatherapp.RetrofitWeather;
-import com.dennis_brink.android.myweatherapp.WeatherApi;
-import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class FragmentCity extends Fragment implements IWeatherListener {
 
@@ -125,36 +115,30 @@ public class FragmentCity extends Fragment implements IWeatherListener {
         weatherData.put("condition", textConditionCity);
         weatherData.put("humidity", textHumidityCity);
         weatherData.put("wind", textWindCity);
-        weatherData.put("maxtemp", textMaxTempCity);
-        weatherData.put("mintemp", textMinTempCity);
         weatherData.put("pressure", textPressureCity);
         weatherData.put("temp", textTempCity);
 
         ApplicationLibrary.setColorTextView(weatherData);
 
+        weatherData.put("maxtemp", textMaxTempCity);
+        weatherData.put("mintemp", textMinTempCity);
+
     }
 
     private void setupWeatherLabels(View view){
 
-        TextView textLabelHumidityCity, textLabelMaxTempCity, textLabelMinTempCity,
-                 textLabelPressureCity, textLabelWindCity, textLabelAirQualityCity,
-                 textLabelDetailsCity;
+        TextView textLabelHumidityCity,
+                 textLabelPressureCity, textLabelWindCity, textLabelAirQualityCity;
 
         textLabelHumidityCity = view.findViewById(R.id.textViewLabelHumidityCity);
         textLabelWindCity = view.findViewById(R.id.textViewLabelWindCity);
-        textLabelMaxTempCity = view.findViewById(R.id.textViewLabelMaxTempCity);
-        textLabelMinTempCity = view.findViewById(R.id.textViewLabelMinTempCity);
         textLabelPressureCity = view.findViewById(R.id.textViewLabelPressureCity);
         textLabelAirQualityCity = view.findViewById(R.id.textViewLabelAirqualityCity);
-        textLabelDetailsCity = view.findViewById(R.id.textViewLabelDetailsCity);
 
         weatherLabels.put("humidity", textLabelHumidityCity);
         weatherLabels.put("wind", textLabelWindCity);
-        weatherLabels.put("maxtemp", textLabelMaxTempCity);
-        weatherLabels.put("mintemp", textLabelMinTempCity);
         weatherLabels.put("pressure", textLabelPressureCity);
         weatherLabels.put("airquality", textLabelAirQualityCity);
-        weatherLabels.put("details", textLabelDetailsCity);
 
         ApplicationLibrary.setColorTextView(weatherLabels);
 
@@ -169,7 +153,7 @@ public class FragmentCity extends Fragment implements IWeatherListener {
         imageViewSearch = view.findViewById(R.id.imageViewIconCitySearch);
 
         imageViewSearch.setOnClickListener(view1 -> {
-            if(!(editTextSearch.getText().toString().isEmpty() || editTextSearch.getText().toString() == "City")){
+            if(!(editTextSearch.getText().toString().isEmpty() || editTextSearch.getText().toString().equals("City"))){
                 RetrofitLibrary.getWeatherDataCity(editTextSearch.getText().toString(), rating, weatherData, imageViewIconCity, getContext());
             }
             editTextSearch.setText("");
@@ -184,11 +168,11 @@ public class FragmentCity extends Fragment implements IWeatherListener {
 
         ImageView imgStar1, imgStar2, imgStar3, imgStar4, imgStar5;
 
-        imgStar1 = view.findViewById(R.id.star1city);
-        imgStar2 = view.findViewById(R.id.star2city);
-        imgStar3 = view.findViewById(R.id.star3city);
-        imgStar4 = view.findViewById(R.id.star4city);
-        imgStar5 = view.findViewById(R.id.star5city);
+        imgStar1 = view.findViewById(R.id.star1City);
+        imgStar2 = view.findViewById(R.id.star2City);
+        imgStar3 = view.findViewById(R.id.star3City);
+        imgStar4 = view.findViewById(R.id.star4City);
+        imgStar5 = view.findViewById(R.id.star5City);
 
         rating.add(imgStar1);
         rating.add(imgStar2);

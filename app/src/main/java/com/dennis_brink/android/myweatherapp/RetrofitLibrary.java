@@ -183,10 +183,6 @@ public class RetrofitLibrary {
                     Log.d("DENNIS_B", response.body().toString());
 
                     response.body().getList(); // data is declared as List<ModelClass> globally
-                    //days = processForecast(data);
-                    //Log.d("DENNIS_B", days.toString());
-                    //adapter = new ForecastAdapter(days); // create adapter and move data in as parameter
-                    //rvForecast.setAdapter(adapter);
                     ForecastHourAdapter adapter = new ForecastHourAdapter(response.body().getList()); // create adapter and move data in as parameter
                     recyclerView.setAdapter(adapter);
 
