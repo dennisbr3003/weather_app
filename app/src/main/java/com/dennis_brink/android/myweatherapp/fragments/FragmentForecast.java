@@ -34,7 +34,17 @@ public class FragmentForecast extends Fragment {
     RecyclerView rvForecast;
     List<com.dennis_brink.android.myweatherapp.model_forecast.List> data;
     List<Day> days = new ArrayList<>();
+    ArrayList<Integer>imageList = new ArrayList<>();
     ForecastAdapter adapter;
+
+    int intdate;
+    Calendar xdate = Calendar.getInstance();
+    String sdate="";
+    String cdate="";
+    String stime="";
+    int day_num=0;
+    Day day=null;
+
     public static FragmentForecast newInstance() {
         return new FragmentForecast();
     }
@@ -43,7 +53,20 @@ public class FragmentForecast extends Fragment {
     public void onStart() {
         super.onStart();
         getWeatherForecastData();
+        loadImageList();
     }
+
+    private void loadImageList(){
+
+        imageList.add(R.drawable.item00);
+        imageList.add(R.drawable.item0);
+        imageList.add(R.drawable.item1);
+        imageList.add(R.drawable.item2);
+        imageList.add(R.drawable.item3);
+        imageList.add(R.drawable.item4);
+
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,7 +75,7 @@ public class FragmentForecast extends Fragment {
         View view = inflater.inflate(R.layout.fragment_forecast, container, false);
 
         rvForecast = view.findViewById(R.id.rvDays);
-        rvForecast.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        rvForecast.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         return view;
 
     }
@@ -76,7 +99,7 @@ public class FragmentForecast extends Fragment {
                     data = response.body().getList(); // data is declared as List<ModelClass> globally
                     days = processForecast(data);
                     Log.d("DENNIS_B", days.toString());
-                    adapter = new ForecastAdapter(days); // create adapter and move data in as parameter
+                    adapter = new ForecastAdapter(days, imageList, getActivity()); // create adapter and move data in as parameter
                     rvForecast.setAdapter(adapter);
 
                 }catch(Exception e){
@@ -94,12 +117,6 @@ public class FragmentForecast extends Fragment {
 
     private List<Day> processForecast(List<com.dennis_brink.android.myweatherapp.model_forecast.List> data) {
 
-        int intdate;
-        Calendar xdate = Calendar.getInstance();
-        String sdate="";
-        String cdate="";
-        int day_num=0;
-        Day day=null;
 
         for(int i=0; i < data.size(); i++ ){
 
@@ -111,7 +128,9 @@ public class FragmentForecast extends Fragment {
                     xdate.get(Calendar.DAY_OF_MONTH),
                     xdate.get(Calendar.MONTH) + 1,
                     xdate.get(Calendar.YEAR));
-
+            stime = String.format("%02d:%02d",
+                    xdate.get(Calendar.HOUR_OF_DAY),
+                    xdate.get(Calendar.MINUTE));
             //Log.d("DENNIS_B", "sdate " + sdate);
             //Log.d("DENNIS_B", "cdate " + cdate);
 
@@ -137,10 +156,19 @@ public class FragmentForecast extends Fragment {
             day.setPressure(data.get(i).getMain().getPressure());
             day.setTemp(data.get(i).getMain().getTemp());
             day.setIcon(data.get(i).getWeather().get(0).getIcon());
+            day.setWind(data.get(i).getWind().getSpeed());
+
+            day.setCondition(data.get(i).getWeather().get(0).getDescription());
             day.setMeasurements(1);
-
-
-
+            try {
+                if(day.getRain_time().isEmpty()) {
+                    if (data.get(i).getRain().get3h() != 0) {
+                        day.setRain_time(stime);
+                    }
+                }
+            } catch(Exception e){
+                Log.d("DENNIS_B", "rain not found");
+            }
         }
         days.add(day);
         return days;

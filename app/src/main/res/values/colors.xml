@@ -154,5 +154,13 @@
     <color name="transparant_RoyalBlue50">#504169E1</color>
     <color name="transparant_RoyalBlue11">#1C4169E1</color>
     <color name="transparant_RoyalBlue15">#264169E1</color>
+    <color name="trans_babyblue11">#1CC8F5F3</color>
+    <color name="trans_babyblue15">#26C8F5F3</color>
+    <color name="trans_babyblue50">#50C8F5F3</color>
+    <color name="trans_babyblue55">#8CC8F5F3</color>
+    <color name="trans_babyblue60">#99C8F5F3</color>
+    <color name="trans_babyblue70">#B3C8F5F3</color>
+    <color name="babyblue">#C8F5F3</color>
     <color name="transparant">#00FFFFFF</color>
 </resources>
+<!-- https://bl.ocks.org/lopspower/03fb1cc0ac9f32ef38f4 -->

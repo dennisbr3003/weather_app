@@ -1,6 +1,7 @@
 package com.dennis_brink.android.myweatherapp.model_day;
 
 import java.text.DateFormatSymbols;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -16,13 +17,17 @@ public class Day {
     double temp;
     double mintemp;
     double maxtemp;
+    double wind;
+    String condition;
     int pressure;
     int humidity;
     int airquality;
     String day_display;
     String day_display_abbreviated;
+    String rain_time="";
 
     private Map<String, Integer> weather_icon = new HashMap<>();
+    private Map<String, Integer> weather_condition = new HashMap<>();
 
     DateFormatSymbols symbols = new DateFormatSymbols(new Locale("en"));
 
@@ -62,21 +67,31 @@ public class Day {
     }
 
     public double getMintemp() {
-        if (this.measurements == 0){return mintemp;}
-        return formatDecimals(mintemp / this.measurements);
+        return mintemp;
     }
 
     public void setMintemp(double mintemp) {
-        this.mintemp += mintemp;
+        if(this.mintemp == 0){
+            this.mintemp = mintemp;
+        } else {
+            if(mintemp < this.mintemp) {
+                this.mintemp = mintemp;
+            }
+        }
     }
 
     public double getMaxtemp() {
-        if (this.measurements == 0){return maxtemp;}
-        return formatDecimals(maxtemp / this.measurements);
+       return maxtemp;
     }
 
     public void setMaxtemp(double maxtemp) {
-        this.maxtemp += maxtemp;
+        if(this.maxtemp == 0){
+            this.maxtemp = maxtemp;
+        } else {
+            if (maxtemp > this.maxtemp) {
+                this.maxtemp = maxtemp;
+            }
+        }
     }
 
     public int getPressure() {
@@ -142,24 +157,43 @@ public class Day {
 
     }
 
-    @Override
-    public String toString() {
-        return "Day{" +
-                "id=" + id +
-                ", measurements=" + measurements +
-                ", date='" + date + '\'' +
-                ", dayofweek = '" + dayofweek + '\'' +
-                ", date_display='" + date_display + '\'' +
-                ", temp=" + temp +
-                ", mintemp=" + mintemp +
-                ", maxtemp=" + maxtemp +
-                ", pressure=" + pressure +
-                ", humidity=" + humidity +
-                ", airquality=" + airquality +
-                ", day_display='" + day_display + '\'' +
-                ", day_display_abbreviated='" + day_display_abbreviated + '\'' +
-                ", weather_icon=" + weather_icon +
-                '}';
+    public double getWind() {
+        if (this.measurements == 0){return wind;}
+        return formatToOneDecimal(wind / this.measurements);
+    }
+
+    public void setWind(double wind) {
+        this.wind += wind;
+    }
+
+    public String getCondition() {
+        String conditionx = Collections.max(weather_condition.entrySet(), Map.Entry.comparingByValue()).getKey();
+        return conditionx;
+    }
+
+    public void setCondition(String condition) {
+        if(weather_condition.containsKey(condition)){
+            weather_condition.put(condition, weather_condition.get(condition) + 1);
+        } else {
+            weather_condition.put(condition, 1);
+        }
+    }
+
+    public String getRain_time() {
+        return rain_time;
+    }
+
+    public void setRain_time(String rain_time) {
+        this.rain_time = rain_time;
+    }
+
+    private double formatToOneDecimal(double x){
+
+        String sx = String.format("%.1f", x);
+        sx = sx.replaceAll(",", ".");
+        double d = Double.parseDouble(sx);
+        return d;
+
     }
 
     private double formatDecimals(double x){
@@ -171,4 +205,30 @@ public class Day {
 
     }
 
+    @Override
+    public String toString() {
+        return "Day{" +
+                "id=" + id +
+                ", measurements=" + measurements +
+                ", date='" + date + '\'' +
+                ", dayofweek=" + dayofweek +
+                ", date_display='" + date_display + '\'' +
+                ", temp=" + temp +
+                ", mintemp=" + mintemp +
+                ", maxtemp=" + maxtemp +
+                ", wind=" + wind +
+                ", condition='" + condition + '\'' +
+                ", pressure=" + pressure +
+                ", humidity=" + humidity +
+                ", airquality=" + airquality +
+                ", day_display='" + day_display + '\'' +
+                ", day_display_abbreviated='" + day_display_abbreviated + '\'' +
+                ", rain_time='" + rain_time + '\'' +
+                ", weather_icon=" + weather_icon +
+                ", weather_condition=" + weather_condition +
+                ", symbols=" + symbols +
+                ", dayNames=" + Arrays.toString(dayNames) +
+                ", dayShortNames=" + Arrays.toString(dayShortNames) +
+                '}';
+    }
 }
