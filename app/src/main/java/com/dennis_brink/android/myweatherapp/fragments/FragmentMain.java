@@ -174,7 +174,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
     private void setupWeatherData(View view){
 
         TextView textHumidity, textMaxTemp, textMinTemp, textPressure,
-                 textWind, textCity, textTemp, textCondition;
+                 textWind, textCity, textTemp, textCondition, textApi4;
 
         textCity = view.findViewById(R.id.textViewCity);
         textCondition = view.findViewById(R.id.textViewWeaterCondition);
@@ -184,6 +184,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         textMinTemp = view.findViewById(R.id.textViewMinTemp);
         textPressure = view.findViewById(R.id.textViewPressure);
         textTemp = view.findViewById(R.id.textViewTemperature);
+        textApi4 = view.findViewById(R.id.textViewApi4);
 
         textCity.setText("");
         textCondition.setText("");
@@ -193,6 +194,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         textMinTemp.setText("");
         textPressure.setText("");
         textTemp.setText("");
+        textApi4.setText("");
 
         textCity.setVisibility(View.INVISIBLE);
         textTemp.setVisibility(View.INVISIBLE);
@@ -209,6 +211,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
 
         weatherData.put("maxtemp", textMaxTemp);
         weatherData.put("mintemp", textMinTemp);
+        weatherData.put("timestamp", textApi4);
 
     }
 

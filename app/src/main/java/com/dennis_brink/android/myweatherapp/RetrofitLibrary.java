@@ -15,6 +15,7 @@ import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -144,6 +145,24 @@ public class RetrofitLibrary {
         weatherData.get("pressure").setText("" + response.body().getMain().getPressure());
         weatherData.get("wind").setText("" + response.body().getWind().getSpeed());
         weatherData.get("temp").setText(response.body().getMain().getTemp() + " °C");
+
+        // TODO = function or method for this -- also used in hours adapter
+        int intdate;
+        Calendar calendar = Calendar.getInstance();
+        String sdate="";
+        String stime="";        
+
+        intdate = response.body().getDt();
+        calendar.setTimeInMillis(intdate * 1000L);
+        sdate = String.format("%02d-%02d-%04d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR));
+        stime = String.format("%02d:%02d",
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE));
+
+        weatherData.get("timestamp").setText(String.format("%s %s", sdate, stime));
 
         String iconCode = response.body().getWeather().get(0).getIcon();
 
