@@ -8,10 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ApplicationLibrary {
@@ -28,6 +30,38 @@ public class ApplicationLibrary {
         }
     }
 
+    public static void showTextViews(Map<String, TextView> textViews){
+
+        for(TextView x : textViews.values()){
+            x.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    public static void hideTextViews(Map<String, TextView> textViews){
+
+        for(TextView x : textViews.values()){
+            x.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+    public static void hideRating(ArrayList<ImageView> rating){
+
+        for(ImageView x : rating){
+            x.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+    public static void showRating(ArrayList<ImageView>rating){
+
+        for(ImageView x : rating){
+            x.setVisibility(View.VISIBLE);
+        }
+
+    }
+
     public static void setColorView(EditText view){
         if(AppConfig.getInstance().isDarkThemeActive()){
             view.setTextColor(ContextCompat.getColor(Application.getContext(), R.color.LightGrey));
@@ -38,7 +72,16 @@ public class ApplicationLibrary {
 
     public static void setColorDrawableBackground(EditText view) {
         Drawable background = view.getBackground();
-        setColorBackgroundDrawable(background);
+        setColorDrawable(background, 0);
+    }
+
+    public static void setColorDrawable(ImageView view , int color) {
+        //Drawable drawable = (Drawable) view.getBackground();
+        //int resourceId = (int) view.getTag();
+        //setColorDrawable(resourceId, color);
+        //ImageView ivVectorImage = (ImageView) findViewById(R.id.ivVectorImage);
+        view.setColorFilter(ContextCompat.getColor(Application.getContext(), color));
+
     }
 
     public static void setColorDrawableBackgroundStroke(EditText view) {
@@ -58,14 +101,15 @@ public class ApplicationLibrary {
         }
     }
 
-    private static void setColorBackgroundDrawable(Drawable drawable){
+    private static void setColorDrawable(Drawable drawable, int color){
 
-        int color;
-        if(AppConfig.getInstance().isDarkThemeActive()){
-            color = R.color.WhiteSmoke;
-        } else {
-            color = R.color.Black;
-        }
+        //int color;
+        //if(AppConfig.getInstance().isDarkThemeActive()){
+        //    color = R.color.WhiteSmoke;
+        //} else {
+        //    color = R.color.Black;
+        //}
+        //Drawable drawable = Application.getContext().getResources().getDrawable(id,Application.getContext().getTheme());
 
         if (drawable instanceof ShapeDrawable) {
             ShapeDrawable shapeDrawable = (ShapeDrawable) drawable;
@@ -77,7 +121,7 @@ public class ApplicationLibrary {
             ColorDrawable colorDrawable = (ColorDrawable) drawable;
             colorDrawable.setColor(ContextCompat.getColor(Application.getContext(), color));
         } else {
-            Log.d("DENNIS_B", "Background drawable type: unknown. Background color could not be set.");
+            Log.d("DENNIS_B", "Drawable type = unknown. Color " + color  + " could not be set.");
         }
 
     }

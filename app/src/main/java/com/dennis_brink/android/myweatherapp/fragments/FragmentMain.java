@@ -26,7 +26,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.dennis_brink.android.myweatherapp.AppConfig;
 import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
+import com.dennis_brink.android.myweatherapp.INetworkStateListener;
 import com.dennis_brink.android.myweatherapp.IPermissionListener;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
 import com.dennis_brink.android.myweatherapp.R;
@@ -38,7 +40,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FragmentMain extends Fragment implements IWeatherListener, IPermissionListener {
+public class FragmentMain extends Fragment implements IWeatherListener, IPermissionListener, INetworkStateListener {
 
     LocationManager locationManager;
     LocationListener locationListener;
@@ -71,6 +73,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
             receiver = new Receiver();
             receiver.setWeatherListener(this);
             receiver.setPermissionListener(this);
+            receiver.setNetworkStateListener(this);
         }
         getActivity().registerReceiver(receiver, getFilter());
 
@@ -84,6 +87,9 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         setupLocationListener();
 
         // permission was already obtained in the main activity, so we do not ask for it here.
+
+        Log.d("DENNIS_B", "Connection avail on startup " + AppConfig.getInstance().isConnectionOnStartup());
+
         if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
 
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -116,6 +122,8 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         intentFilter.addAction("LOCAL_WEATHER_DATA_ERROR"); // only register receiver for this event
         intentFilter.addAction("STOP_PROGRESS_BAR");
         intentFilter.addAction("LOCATION_PERMISSION_GRANTED");
+        intentFilter.addAction("NETWORK_CONNECTION_LOST");
+        intentFilter.addAction("NETWORK_CONNECTION_AVAILABLE");
         return intentFilter;
     }
 
@@ -176,7 +184,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         TextView textHumidity, textMaxTemp, textMinTemp, textPressure,
                  textWind, textCity, textTemp, textCondition, textApi4;
 
-        textCity = view.findViewById(R.id.textViewCity);
+        textCity = view.findViewById(R.id.textViewIBeam);
         textCondition = view.findViewById(R.id.textViewWeaterCondition);
         textHumidity = view.findViewById(R.id.textViewHumidity);
         textWind = view.findViewById(R.id.textViewWind);
@@ -194,7 +202,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         textMinTemp.setText("");
         textPressure.setText("");
         textTemp.setText("");
-        textApi4.setText("");
+        textApi4.setText("none");
 
         textCity.setVisibility(View.INVISIBLE);
         textTemp.setVisibility(View.INVISIBLE);
@@ -310,5 +318,17 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         // permission granted so get data
         Log.d("DENNIS_B", "FragmentMain.afterPermissionGranted() receiver reached");
         setupListenersAndInitData();
+    }
+
+    @Override
+    public void networkStateChanged(String state) {
+        Log.d("DENNIS_B", "FragmentMain.networkStateChanged(state) receiver reached with " + state);
+        switch(state){
+            case "NETWORK_CONNECTION_LOST":
+                break;
+            case "NETWORK_CONNECTION_AVAILABLE":
+                setupListenersAndInitData();
+                break;
+        }
     }
 }

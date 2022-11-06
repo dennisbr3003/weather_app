@@ -89,8 +89,7 @@
             android:layout_height="100dp"
             android:layout_marginStart="25dp"
             android:contentDescription="@string/_local_weather"
-            android:scaleType="fitXY"
-            android:src="@mipmap/image870" />
+            android:scaleType="fitXY" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -133,7 +132,7 @@
             android:textAlignment="viewEnd"
             android:textColor="@color/DodgerBlue"
             android:textSize="24sp"
-            app:layout_constraintEnd_toStartOf="@+id/textViewCity"
+            app:layout_constraintEnd_toStartOf="@+id/textViewIBeam"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -146,15 +145,17 @@
             android:textAlignment="viewStart"
             android:textColor="@color/OrangeRed"
             android:textSize="24sp"
-            app:layout_constraintStart_toEndOf="@+id/textViewCity"
+            app:layout_constraintStart_toEndOf="@+id/textViewIBeam"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textViewCity"
+            android:id="@+id/textViewIBeam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="I"
+            android:textColor="@color/DarkGray"
             android:textSize="48sp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -180,6 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/_humidity"
+                android:visibility="invisible"
                 android:textColor="@color/Black"
                 android:textSize="20sp" />
 
@@ -190,6 +192,7 @@
                 android:layout_marginTop="5dp"
                 android:text="@string/_pressure"
                 android:textColor="@color/Black"
+                android:visibility="invisible"
                 android:textSize="20sp" />
 
             <TextView
@@ -199,6 +202,7 @@
                 android:layout_marginTop="5dp"
                 android:text="@string/_wind"
                 android:textColor="@color/Black"
+                android:visibility="invisible"
                 android:textSize="20sp" />
 
             <TextView
@@ -208,6 +212,7 @@
                 android:layout_marginTop="5dp"
                 android:text="@string/_air_quality"
                 android:textColor="@color/Black"
+                android:visibility="invisible"
                 android:textSize="20sp" />
 
         </LinearLayout>
@@ -234,12 +239,13 @@
                     android:textSize="20sp" />
 
                 <ImageView
-                    android:id="@+id/imageView2City"
+                    android:id="@+id/imageViewHumidityCity"
                     android:layout_width="35dp"
                     android:layout_height="28dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="5dp"
-                    android:src="@drawable/humidity" />
+                    android:src="@drawable/humidity"
+                    android:visibility="invisible" />
             </LinearLayout>
 
             <TextView
@@ -323,5 +329,63 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/textViewApi12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="TextView"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textViewApi11"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/textViewApi11"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:layout_marginStart="4dp"
+                android:drawableLeft="@drawable/ic_baseline_sync_24"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textViewApi10"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewApi10"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:layout_marginStart="4dp"
+                android:text="https://api.openweathermap.org/data/2.5"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textViewApi9"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewApi9"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:drawableLeft="@drawable/ic_baseline_data_object_24"
+                android:textSize="10sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -161,6 +161,7 @@
     <color name="trans_babyblue60">#99C8F5F3</color>
     <color name="trans_babyblue70">#B3C8F5F3</color>
     <color name="babyblue">#C8F5F3</color>
+    <color name="searchOrange">#FF6D00</color>
     <color name="transparant">#00FFFFFF</color>
 </resources>
 <!-- https://bl.ocks.org/lopspower/03fb1cc0ac9f32ef38f4 -->

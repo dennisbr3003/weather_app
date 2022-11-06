@@ -150,7 +150,7 @@ public class RetrofitLibrary {
         int intdate;
         Calendar calendar = Calendar.getInstance();
         String sdate="";
-        String stime="";        
+        String stime="";
 
         intdate = response.body().getDt();
         calendar.setTimeInMillis(intdate * 1000L);

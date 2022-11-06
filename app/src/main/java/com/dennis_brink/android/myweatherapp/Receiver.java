@@ -9,6 +9,7 @@ public class Receiver extends BroadcastReceiver {
 
     private IWeatherListener weatherListener;
     private IPermissionListener permissionListener;
+    private INetworkStateListener networkStateListener;
 
     public void setWeatherListener(IWeatherListener weatherListener){
         this.weatherListener = weatherListener;
@@ -18,8 +19,13 @@ public class Receiver extends BroadcastReceiver {
         this.permissionListener = permissionListener;
     }
 
+    public void setNetworkStateListener(INetworkStateListener networkStateListener){
+        this.networkStateListener = networkStateListener;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
+
         Log.d("DENNIS_B", "Receiver.onReceive() :  Receiver reached with action " + intent.getAction());
 
         if(intent.getAction().equals("STOP_PROGRESS_BAR")) {
@@ -33,6 +39,13 @@ public class Receiver extends BroadcastReceiver {
                 permissionListener.afterPermissionGranted();
             }
         }
+
+        if(intent.getAction().equals("NETWORK_CONNECTION_LOST") || intent.getAction().equals("NETWORK_CONNECTION_AVAILABLE")) {
+            if (networkStateListener != null) {
+                networkStateListener.networkStateChanged(intent.getAction());
+            }
+        }
+
 
     }
 

@@ -11,14 +11,9 @@ public class AppConfig {
 
     private static AppConfig instance = new AppConfig();
 
-    private double lon;
-    private double lat;
-    private double slon;
-    private double slat;
-    private String location;
-    private String slocation;
     private String api_key;
     private static boolean darkThemeActive = false;
+    private static boolean connectionOnStartup = false;
 
     private AppConfig() {
 
@@ -39,6 +34,14 @@ public class AppConfig {
 
     public boolean isDarkThemeActive() {
         return darkThemeActive;
+    }
+
+    public boolean isConnectionOnStartup() {
+        return connectionOnStartup;
+    }
+
+    public void setConnectionOnStartup(boolean connectionOnStartup) {
+        AppConfig.connectionOnStartup = connectionOnStartup;
     }
 
     private static boolean getDarkThemeActive(){
@@ -69,10 +72,6 @@ public class AppConfig {
     public String toString() {
         return "AppConfig{" +
                 "api_key='" + api_key + '\'' +
-                ", darkThemeActive=" + darkThemeActive +
                 '}';
     }
-
-
-
 }

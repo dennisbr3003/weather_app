@@ -14,6 +14,11 @@ import android.content.res.AssetManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -36,20 +41,22 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager2 viewPager2;
 
-    LocationManager locationManager;
-    LocationListener locationListener;
+    //LocationManager locationManager;
+    //LocationListener locationListener;
     double lat, lon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         getAPIkey();
 
         // ask for permission to access user location if needed
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
+        setupNetworkStateListener();
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.viewPagerMain);
@@ -72,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
         });
         tabLayoutMediator.attach();
+
+        AppConfig.getInstance().setConnectionOnStartup(isNetworkAvailable());
+
     }
 
     @Override
@@ -135,6 +145,45 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
+        Log.d("DENNIS_B", "MainActivity.isNetworkAvailable() : " + (activeNetworkInfo != null && activeNetworkInfo.isConnected()));
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+
+    private void setupNetworkStateListener(){
+
+        Log.d("DENNIS_B", "MainActivity.setupNetworkStateListener()");
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
+        NetworkRequest.Builder builder = new NetworkRequest.Builder();
+
+        builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+
+        ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
+
+            @Override
+            public void onAvailable(Network network) {
+                super.onAvailable(network);
+                Log.d("DENNIS_B", "Connection available");
+                broadcastNetworkState(getApplicationContext(), "NETWORK_CONNECTION_AVAILABLE");
+            }
+
+            @Override
+            public void onLost(Network network) {
+                super.onLost(network);
+                Log.d("DENNIS_B", "Connection lost");
+                broadcastNetworkState(getApplicationContext(), "NETWORK_CONNECTION_LOST");
+            }
+
+        };
+        cm.registerNetworkCallback(builder.build(), callback);
+    }
+
     private static void broadcastLocationPermission(Context context) {
 
         Log.d("DENNIS_B", String.format("MainActivity.broadcastLocationPermission(): sending 'LOCATION_PERMISSION_GRANTED' "));
@@ -143,5 +192,15 @@ public class MainActivity extends AppCompatActivity {
         context.sendBroadcast(i);
 
     }
+
+    private static void broadcastNetworkState(Context context, String state) {
+
+        Log.d("DENNIS_B", String.format("MainActivity.broadcastNetworkState(): sending " + state));
+        Intent i = new Intent();
+        i.setAction(state);
+        context.sendBroadcast(i);
+
+    }
+
 
 }
