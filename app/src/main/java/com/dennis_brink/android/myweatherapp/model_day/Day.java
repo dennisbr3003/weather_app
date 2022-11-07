@@ -18,7 +18,6 @@ public class Day {
     double mintemp;
     double maxtemp;
     double wind;
-    String condition;
     int pressure;
     int humidity;
     int airquality;
@@ -217,7 +216,6 @@ public class Day {
                 ", mintemp=" + mintemp +
                 ", maxtemp=" + maxtemp +
                 ", wind=" + wind +
-                ", condition='" + condition + '\'' +
                 ", pressure=" + pressure +
                 ", humidity=" + humidity +
                 ", airquality=" + airquality +

@@ -127,38 +127,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:layout_marginEnd="7dp"
+            android:layout_marginEnd="13dp"
             android:text="@string/_15_c"
             android:textAlignment="viewEnd"
             android:textColor="@color/DodgerBlue"
             android:textSize="24sp"
-            app:layout_constraintEnd_toStartOf="@+id/textViewIBeam"
+            app:layout_constraintEnd_toStartOf="@+id/viewIBeam0"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/viewIBeam0"
+            android:layout_width="1dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/black"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textViewMaxTempCity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
+            android:layout_marginStart="13dp"
             android:layout_marginTop="18dp"
             android:text="@string/_25_c"
             android:textAlignment="viewStart"
             android:textColor="@color/OrangeRed"
             android:textSize="24sp"
-            app:layout_constraintStart_toEndOf="@+id/textViewIBeam"
+            app:layout_constraintStart_toEndOf="@+id/viewIBeam0"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textViewIBeam"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="I"
-            android:textColor="@color/DarkGray"
-            android:textSize="48sp"
-            android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -384,6 +385,12 @@
                 android:textSize="10sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,7 +30,19 @@ public class Receiver extends BroadcastReceiver {
 
         if(intent.getAction().equals("STOP_PROGRESS_BAR")) {
             if (weatherListener != null) {
-                weatherListener.stopProgressBar();
+                weatherListener.stopProgressBar(intent.getStringExtra("type"));
+            }
+        }
+
+        if(intent.getAction().equals("CALL_COMPLETE")) {
+            if (weatherListener != null) {
+                weatherListener.callComplete(intent.getStringExtra("type"));
+            }
+        }
+
+        if(intent.getAction().equals("LOCAL_WEATHER_DATA_ERROR")) {
+            if (weatherListener != null) {
+                weatherListener.showErrorMessage(intent.getStringExtra("text"), intent.getStringExtra("type"));
             }
         }
 

@@ -1,13 +1,10 @@
 package com.dennis_brink.android.myweatherapp;
 
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,14 +35,6 @@ public class ApplicationLibrary {
 
     }
 
-    public static void hideTextViews(Map<String, TextView> textViews){
-
-        for(TextView x : textViews.values()){
-            x.setVisibility(View.INVISIBLE);
-        }
-
-    }
-
     public static void hideRating(ArrayList<ImageView> rating){
 
         for(ImageView x : rating){
@@ -70,18 +59,8 @@ public class ApplicationLibrary {
         }
     }
 
-    public static void setColorDrawableBackground(EditText view) {
-        Drawable background = view.getBackground();
-        setColorDrawable(background, 0);
-    }
-
     public static void setColorDrawable(ImageView view , int color) {
-        //Drawable drawable = (Drawable) view.getBackground();
-        //int resourceId = (int) view.getTag();
-        //setColorDrawable(resourceId, color);
-        //ImageView ivVectorImage = (ImageView) findViewById(R.id.ivVectorImage);
         view.setColorFilter(ContextCompat.getColor(Application.getContext(), color));
-
     }
 
     public static void setColorDrawableBackgroundStroke(EditText view) {
@@ -99,31 +78,6 @@ public class ApplicationLibrary {
         } else {
             drawable.setStroke(2, ContextCompat.getColor(Application.getContext(), R.color.Black));
         }
-    }
-
-    private static void setColorDrawable(Drawable drawable, int color){
-
-        //int color;
-        //if(AppConfig.getInstance().isDarkThemeActive()){
-        //    color = R.color.WhiteSmoke;
-        //} else {
-        //    color = R.color.Black;
-        //}
-        //Drawable drawable = Application.getContext().getResources().getDrawable(id,Application.getContext().getTheme());
-
-        if (drawable instanceof ShapeDrawable) {
-            ShapeDrawable shapeDrawable = (ShapeDrawable) drawable;
-            shapeDrawable.getPaint().setColor(ContextCompat.getColor(Application.getContext(), color));
-        } else if (drawable instanceof GradientDrawable) {
-            GradientDrawable gradientDrawable = (GradientDrawable) drawable;
-            gradientDrawable.setColor(ContextCompat.getColor(Application.getContext(), color));
-        } else if (drawable instanceof ColorDrawable) {
-            ColorDrawable colorDrawable = (ColorDrawable) drawable;
-            colorDrawable.setColor(ContextCompat.getColor(Application.getContext(), color));
-        } else {
-            Log.d("DENNIS_B", "Drawable type = unknown. Color " + color  + " could not be set.");
-        }
-
     }
 
 }

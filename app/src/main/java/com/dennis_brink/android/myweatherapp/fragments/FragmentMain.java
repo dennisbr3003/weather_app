@@ -47,8 +47,9 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
     Receiver receiver = null;
     RecyclerView rvForecastHour;
 
-    private ImageView imageViewIcon;
+    private ImageView imageViewIcon, imageViewHumidityLocal, imageViewNoNetworkLocal;
     private ProgressBar progressBar;
+    private View viewIbeam;
 
     private double lat;
     private double lon;
@@ -64,9 +65,6 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
     @Override
     public void onStart() {
         super.onStart();
-
-        progressBar.setVisibility(View.VISIBLE);
-        imageViewIcon.setVisibility(View.INVISIBLE);
 
         if(receiver == null){
             Log.d("DENNIS_B", "FragmentMain.onStart(): registering receiver");
@@ -84,13 +82,19 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
 
     private void setupListenersAndInitData(){
 
+        progressBar.setVisibility(View.VISIBLE);
+
         setupLocationListener();
 
         // permission was already obtained in the main activity, so we do not ask for it here.
 
-        Log.d("DENNIS_B", "Connection avail on startup " + AppConfig.getInstance().isConnectionOnStartup());
+        Log.d("DENNIS_B", "Connection avail on startup " + AppConfig.getInstance().hasConnectionOnStartup());
 
-        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if((ContextCompat.checkSelfPermission(getActivity(),
+                                              Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) &&
+                AppConfig.getInstance().hasConnectionOnStartup()){ // connection must be there
+
+            imageViewNoNetworkLocal.setVisibility(View.INVISIBLE);
 
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
@@ -111,7 +115,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
             Log.d("DENNIS_B", "FragmentMain.onStart(): setup listener to check every 500m by 50m");
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 50, locationListener); // set op the listener parameters
         } else { // stop loading, something went wrong
-            stopProgressBar();
+            stopProgressBarLocal("error");
         }
     }
 
@@ -167,6 +171,9 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         // do stuff here like in an Activity's onCreate
         progressBar = view.findViewById(R.id.progressBar);
         imageViewIcon = view.findViewById(R.id.imageViewIcon);
+        imageViewHumidityLocal = view.findViewById(R.id.imageViewHumidityLocal);
+        imageViewNoNetworkLocal = view.findViewById(R.id.imageViewNoNetworkLocal);
+        viewIbeam = view.findViewById(R.id.viewIBeam);
 
         rvForecastHour = view.findViewById(R.id.rvHours);
         rvForecastHour.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -174,7 +181,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         setupWeatherData(view);
         setupRating(view);
         setupWeatherLabels(view);
-
+        ApplicationLibrary.hideRating(rating);
         return view;
 
     }
@@ -182,7 +189,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
     private void setupWeatherData(View view){
 
         TextView textHumidity, textMaxTemp, textMinTemp, textPressure,
-                 textWind, textCity, textTemp, textCondition, textApi4;
+                 textWind, textCity, textTemp, textCondition, textApi;
 
         textCity = view.findViewById(R.id.textViewIBeam);
         textCondition = view.findViewById(R.id.textViewWeaterCondition);
@@ -192,7 +199,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         textMinTemp = view.findViewById(R.id.textViewMinTemp);
         textPressure = view.findViewById(R.id.textViewPressure);
         textTemp = view.findViewById(R.id.textViewTemperature);
-        textApi4 = view.findViewById(R.id.textViewApi4);
+        textApi = view.findViewById(R.id.textViewApi);
 
         textCity.setText("");
         textCondition.setText("");
@@ -202,11 +209,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         textMinTemp.setText("");
         textPressure.setText("");
         textTemp.setText("");
-        textApi4.setText("none");
-
-        textCity.setVisibility(View.INVISIBLE);
-        textTemp.setVisibility(View.INVISIBLE);
-        textCondition.setVisibility(View.INVISIBLE);
+        textApi.setText("none");
 
         weatherData.put("city", textCity);
         weatherData.put("condition", textCondition);
@@ -219,13 +222,13 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
 
         weatherData.put("maxtemp", textMaxTemp);
         weatherData.put("mintemp", textMinTemp);
-        weatherData.put("timestamp", textApi4);
+        weatherData.put("timestamp", textApi);
 
     }
 
     private void setupWeatherLabels(View view){
 
-        TextView textLabelHumidity,
+        TextView textLabelHumidity, textViewIBeam,
                  textLabelPressure, textLabelWind, textLabelAirQuality;
 
         textLabelHumidity = view.findViewById(R.id.textViewLabelHumidity);
@@ -281,6 +284,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
             @Override
             public void onLocationChanged(@NonNull Location location) { // user location
 
+                imageViewNoNetworkLocal.setVisibility(View.INVISIBLE);
                 Log.d("DENNIS_B", "FragmentMain.setupLocationListener().onLocationChanged(): location changed");
 
                 lat = location.getLatitude();
@@ -298,19 +302,40 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
     }
 
     @Override
-    public void showErrorMessage(String text) {
+    public void showErrorMessage(String text, String type) {
         // create a dialog here to show an error message
-        Log.d("DENNIS_B", "FragmentMain.showErrorMessage() receiver reached");
+        Log.d("DENNIS_B", "FragmentMain.showErrorMessage() receiver reached for type: " + type);
     }
 
     @Override
-    public void stopProgressBar() {
-        Log.d("DENNIS_B", "FragmentMain.stopProgressBar() receiver reached");
+    public void stopProgressBar(String type) {
+        Log.d("DENNIS_B", "FragmentMain.stopProgressBar() receiver reached with type: " + type);
         progressBar.setVisibility(View.INVISIBLE);
-        weatherData.get("city").setVisibility(View.VISIBLE);
-        weatherData.get("temp").setVisibility(View.VISIBLE);
-        weatherData.get("condition").setVisibility(View.VISIBLE);
-        imageViewIcon.setVisibility(View.VISIBLE);
+
+        ApplicationLibrary.showTextViews(weatherLabels);
+        ApplicationLibrary.showRating(rating);
+        imageViewHumidityLocal.setVisibility(View.VISIBLE);
+        viewIbeam.setVisibility(View.VISIBLE);
+
+    }
+
+    @Override
+    public void callComplete(String type) {
+
+    }
+
+    public void stopProgressBarLocal(String state) {
+        Log.d("DENNIS_B", "FragmentMain.stopProgressBar() receiver reached with state " + state);
+        progressBar.setVisibility(View.INVISIBLE);
+        switch(state){
+            case "error":
+                if(!AppConfig.getInstance().hasConnectionOnStartup()) { // no internet
+                    imageViewNoNetworkLocal.setVisibility(View.VISIBLE);
+                } else { //some other error
+
+                }
+                break;
+        }
     }
 
     @Override
@@ -327,6 +352,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
             case "NETWORK_CONNECTION_LOST":
                 break;
             case "NETWORK_CONNECTION_AVAILABLE":
+                AppConfig.getInstance().setConnectionOnStartup(true);
                 setupListenersAndInitData();
                 break;
         }

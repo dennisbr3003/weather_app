@@ -113,16 +113,26 @@ public class RetrofitLibrary {
             public void onResponse(Call<OpenWeatherMap> call, Response<OpenWeatherMap> response) {
 
                 try {
+                    if(response.isSuccessful()) {
+                        RetrofitLibrary.getPollutionData(response.body().getCoord().getLat(), response.body().getCoord().getLon(), rating, context);
 
-                    RetrofitLibrary.getPollutionData(response.body().getCoord().getLat(), response.body().getCoord().getLon(), rating, context);
+                        Log.d("DENNIS_B", response.toString());
+                        Log.d("DENNIS_B", response.body().toString());
 
-                    Log.d("DENNIS_B", response.toString());
-                    Log.d("DENNIS_B", response.body().toString());
+                        loadValuesIntoViews(weatherData, response, icon, context);
 
-                    loadValuesIntoViews(weatherData, response, icon, context);
+                        broadcastCallCompleteAlert(context, "city");  // this will let the fragment now the call ended correctly,
+                                                                           // stop the progressbar and show the views
+
+                    } else {
+                        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataCity() : call is not successful; no data found");
+                        broadcastErrorAlert(context, String.format("No new data found using '%s'", city), "city");
+
+                    }
 
                 }catch(Exception e){
                     Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataCity(): error loading weather data: " + e.getLocalizedMessage());
+                    broadcastErrorAlert(context, String.format("Error (exception) loading weather data '%s'", e.getLocalizedMessage()), "city");
                 }
 
             }
@@ -130,6 +140,7 @@ public class RetrofitLibrary {
             @Override
             public void onFailure(Call<OpenWeatherMap> call, Throwable t) {
                 Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataCity(): Retrofit did not return any weather data" + t.getLocalizedMessage());
+                broadcastErrorAlert(context, String.format("Error (onFailure) loading weather data '%s'", t.getLocalizedMessage()), "city");
             }
         });
 
@@ -173,14 +184,14 @@ public class RetrofitLibrary {
                     @Override
                     public void onSuccess() {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() weather icon loaded: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");
-                        broadcastProgressBarAlert(context);
+                        broadcastProgressBarAlert(context, "?");
                     }
 
                     @Override
                     public void onError(Exception e) {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather icon: " + e.getLocalizedMessage());
                         icon.setImageResource(R.mipmap.image870);
-                        broadcastProgressBarAlert(context);
+                        broadcastProgressBarAlert(context, "?");
                     }
                 });
     }
@@ -218,11 +229,33 @@ public class RetrofitLibrary {
         });
     }
 
-    private static void broadcastProgressBarAlert(Context context) {
+    private static void broadcastErrorAlert(Context context, String text, String type) {
 
-        Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastProgressBarAlert(): sending 'STOP_PROGRESS_BAR' "));
+        Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastProgressBarAlert(): sending 'LOCAL_WEATHER_DATA_ERROR' for type " + type));
+        Intent i = new Intent();
+        i.setAction("LOCAL_WEATHER_DATA_ERROR");
+        i.putExtra("text", text);
+        i.putExtra("type", type);
+        context.sendBroadcast(i);
+
+    }
+
+    private static void broadcastProgressBarAlert(Context context, String type) {
+
+        Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastProgressBarAlert(): sending 'STOP_PROGRESS_BAR' for type " + type));
         Intent i = new Intent();
         i.setAction("STOP_PROGRESS_BAR");
+        i.putExtra("type", type);
+        context.sendBroadcast(i);
+
+    }
+
+    private static void broadcastCallCompleteAlert(Context context, String type) {
+
+        Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastCallCompleteAlert(): sending 'CALL_COMPLETE' for type " + type));
+        Intent i = new Intent();
+        i.setAction("CALL_COMPLETE");
+        i.putExtra("type", type);
         context.sendBroadcast(i);
 
     }

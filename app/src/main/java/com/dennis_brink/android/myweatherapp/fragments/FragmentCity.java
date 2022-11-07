@@ -12,7 +12,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.dennis_brink.android.myweatherapp.AppConfig;
 import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
 import com.dennis_brink.android.myweatherapp.INetworkStateListener;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
@@ -28,6 +30,7 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
 
     private ImageView imageViewIconCity, imageViewHumidity, imageViewSearch;
     private EditText editTextSearch;
+    private View viewIbeam;
     Receiver receiver = null;
 
     private ArrayList<ImageView> rating = new ArrayList<>();
@@ -49,6 +52,11 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
             receiver.setNetworkStateListener(this);
         }
         getActivity().registerReceiver(receiver, getFilter());
+
+        if(!AppConfig.getInstance().hasConnectionOnStartup()){
+            disableSearchField();
+        }
+
     }
 
     private IntentFilter getFilter(){
@@ -57,6 +65,7 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         Log.d("DENNIS_B", "FragmentCity.getFilter(): Registering for broadcast action NETWORK_CONNECTION_LOST, NETWORK_CONNECTION_AVAILABLE");
         intentFilter.addAction("LOCAL_WEATHER_DATA_ERROR"); // only register receiver for this event
         intentFilter.addAction("STOP_PROGRESS_BAR");
+        intentFilter.addAction("CALL_COMPLETE");
         intentFilter.addAction("NETWORK_CONNECTION_LOST");
         intentFilter.addAction("NETWORK_CONNECTION_AVAILABLE");
         return intentFilter;
@@ -83,6 +92,7 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         imageViewHumidity = view.findViewById(R.id.imageViewHumidityCity);
         imageViewSearch = view.findViewById(R.id.imageViewIconCitySearch);
         editTextSearch = view.findViewById(R.id.editTextSearch);
+        viewIbeam = view.findViewById(R.id.viewIBeam0);
 
         setupWeatherData(view);
         setupRating(view);
@@ -135,14 +145,13 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
 
     private void setupWeatherLabels(View view){
 
-        TextView textLabelHumidityCity, textViewIBeam, textViewApi12,
+        TextView textLabelHumidityCity,
                  textLabelPressureCity, textLabelWindCity, textLabelAirQualityCity;
 
         textLabelHumidityCity = view.findViewById(R.id.textViewLabelHumidityCity);
         textLabelWindCity = view.findViewById(R.id.textViewLabelWindCity);
         textLabelPressureCity = view.findViewById(R.id.textViewLabelPressureCity);
         textLabelAirQualityCity = view.findViewById(R.id.textViewLabelAirqualityCity);
-        textViewIBeam = view.findViewById(R.id.textViewIBeam);
 
         weatherLabels.put("humidity", textLabelHumidityCity);
         weatherLabels.put("wind", textLabelWindCity);
@@ -150,8 +159,6 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         weatherLabels.put("airquality", textLabelAirQualityCity);
 
         ApplicationLibrary.setColorTextView(weatherLabels);
-
-        weatherLabels.put("ibeam", textViewIBeam);
 
     }
 
@@ -162,9 +169,7 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         imageViewSearch.setOnClickListener(view1 -> {
             if(!(editTextSearch.getText().toString().isEmpty() || editTextSearch.getText().toString().equals("City"))){
                 RetrofitLibrary.getWeatherDataCity(editTextSearch.getText().toString(), rating, weatherData, imageViewIconCity, getContext());
-                ApplicationLibrary.showTextViews(weatherLabels);
-                ApplicationLibrary.showRating(rating);
-                imageViewHumidity.setVisibility(View.VISIBLE);
+                // if all went well we should end up in "stopProgressBar()". The screen will be set up from there
 
             }
             editTextSearch.setText("");
@@ -194,13 +199,28 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
     }
 
     @Override
-    public void showErrorMessage(String text) {
-        Log.d("DENNIS_B", "FragmentCity.showErrorMessage() receiver reached");
+    public void showErrorMessage(String text, String type) {
+        Log.d("DENNIS_B", "FragmentCity.showErrorMessage() receiver reached for type: " + type);
+        // if a data error occurs do nothing. Just show there is no data found.
+        if(type.equals("city")) {
+            Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
-    public void stopProgressBar() {
-        Log.d("DENNIS_B", "FragmentCity.stopProgressBar() receiver reached");
+    public void stopProgressBar(String type) {
+        Log.d("DENNIS_B", "FragmentCity.stopProgressBar() receiver reached for type " + type);
+    }
+
+    @Override
+    public void callComplete(String type) {
+        Log.d("DENNIS_B", "FragmentCity.callComplete(type) receiver reached with " + type);
+        if(type.equals("city")){
+            ApplicationLibrary.showTextViews(weatherLabels);
+            ApplicationLibrary.showRating(rating);
+            imageViewHumidity.setVisibility(View.VISIBLE);
+            viewIbeam.setVisibility(View.VISIBLE);
+        }
     }
 
     private void disableSearchField(){
@@ -225,6 +245,7 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
                 disableSearchField();
                 break;
             case "NETWORK_CONNECTION_AVAILABLE":
+                AppConfig.getInstance().setConnectionOnStartup(true);
                 enableSearchField();
                 break;
         }

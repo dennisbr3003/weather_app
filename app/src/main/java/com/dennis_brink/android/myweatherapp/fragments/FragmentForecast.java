@@ -163,6 +163,7 @@ public class FragmentForecast extends Fragment {
             try {
                 if(day.getRain_time().isEmpty()) {
                     if (data.get(i).getRain().get3h() != 0) {
+                        Log.d("DENNIS_B", "rain found coming at " + stime);
                         day.setRain_time(stime);
                     }
                 }

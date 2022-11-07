@@ -36,7 +36,7 @@ public class AppConfig {
         return darkThemeActive;
     }
 
-    public boolean isConnectionOnStartup() {
+    public boolean hasConnectionOnStartup() {
         return connectionOnStartup;
     }
 

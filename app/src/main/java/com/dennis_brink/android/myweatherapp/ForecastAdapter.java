@@ -60,33 +60,27 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
             holder.imageViewRainDay.setVisibility(View.VISIBLE);
             holder.textViewRainDay.setVisibility(View.VISIBLE);
             holder.textViewRainDay.setText(data.get(position).getRain_time());
+        } else {
+            holder.imageViewRainDay.setVisibility(View.INVISIBLE);
+            holder.textViewRainDay.setVisibility(View.INVISIBLE);
         }
-
 
         String icon = data.get(position).getIcon();
         icon = icon.replaceAll("n", "d");
 
         String finalIcon = icon;
 
-
-
         Picasso.get().load("https://openweathermap.org/img/wn/" + icon + "@2x.png")
                 .into(holder.imageViewIcon, new com.squareup.picasso.Callback() {
                     @Override
                     public void onSuccess() {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() weather icon loaded: " + "https://openweathermap.org/img/wn/" + finalIcon + "@2x.png");
-                        //if(type.equals("local") || type.equals("city")) {
-                        //broadcastProgressBarAlert(context);
-                        //}
                     }
 
                     @Override
                     public void onError(Exception e) {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather icon: " + e.getLocalizedMessage());
                         holder.imageViewIcon.setImageResource(R.mipmap.image870);
-                        //if(type.equals("local") || type.equals("city")) {
-                        //broadcastProgressBarAlert(context);
-                        //}
                     }
                 });
 
