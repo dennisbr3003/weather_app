@@ -105,7 +105,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
                 lon = location.getLongitude();
                 Log.d("DENNIS_B", "FragmentMain.onStart(): last known location lat/lon " + lat + "/" + lon);
                 RetrofitLibrary.getWeatherDataLocal(lat, lon, rating, weatherData, imageViewIcon, getContext());
-                RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour);
+                RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour, getContext());
 
             }
             else {
@@ -292,7 +292,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
                 Log.d("DENNIS_B", "FragmentMain.setupLocationListener().onLocationChanged(): latitude " + lat + " longitude " + lon);
 
                 RetrofitLibrary.getWeatherDataLocal(lat, lon, rating, weatherData, imageViewIcon, getContext());
-                RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour);
+                RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour, getContext());
 
             }
         };
@@ -305,6 +305,10 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
     public void showErrorMessage(String text, String type) {
         // create a dialog here to show an error message
         Log.d("DENNIS_B", "FragmentMain.showErrorMessage() receiver reached for type: " + type);
+        if(type.equals("main")) {  // listeners are the same in all fragments type makes sure
+            // the correct dialog is shown, and only once (bit tricky)
+            ApplicationLibrary.getErrorAlertDialog(text, getActivity()).show();
+        }
     }
 
     @Override

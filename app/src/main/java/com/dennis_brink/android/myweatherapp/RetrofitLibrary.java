@@ -9,13 +9,11 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dennis_brink.android.myweatherapp.model_airquality.OpenWeatherAirQuality;
-import com.dennis_brink.android.myweatherapp.model_forecast.List;
 import com.dennis_brink.android.myweatherapp.model_forecast.OpenWeatherForecast;
 import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -24,46 +22,54 @@ import retrofit2.Response;
 
 public class RetrofitLibrary {
 
-    private static void getPollutionData(double lat, double lon, ArrayList<ImageView>rating, Context context){
+    private static String getPollutionData(double lat, double lon, ArrayList<ImageView>rating, Context context) {
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
 
+        final String[] error = {""};
+
         Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() lat/lon: " + lat + " " + lon);
+        try {
+            Call<OpenWeatherAirQuality> call = weatherApi.getWeatherAirQuality(lat, lon, AppConfig.getInstance().getApi_key());
+            call.enqueue(new Callback<OpenWeatherAirQuality>() {
+                @Override
+                public void onResponse(Call<OpenWeatherAirQuality> call, Response<OpenWeatherAirQuality> response) {
 
-        Call<OpenWeatherAirQuality> call = weatherApi.getWeatherAirQuality(lat, lon, AppConfig.getInstance().getApi_key());
-        call.enqueue(new Callback<OpenWeatherAirQuality>() {
-            @Override
-            public void onResponse(Call<OpenWeatherAirQuality> call, Response<OpenWeatherAirQuality> response) {
-
-                try {
-                    Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() " + response);
-                    Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() score : " + response.body().getList().get(0).getMain().getAqi());
-                    /* 1 = 5 stars
-                       2 = 4 stars
-                       3 = 3 stars
-                       4 = 2 stars
-                       5 = 1 stars
-                       Air Quality Index. Possible values: 1, 2, 3, 4, 5. Where 1 = Good, 2 = Fair, 3 = Moderate, 4 = Poor, 5 = Very Poor.
-                     */
-                    int t=0;
-                    for(int i = rating.size();i!=0;i--){
-                        if(i >= response.body().getList().get(0).getMain().getAqi()) {
-                            rating.get(t).setImageResource(R.drawable.star_yellow);
-                        } else {
-                            rating.get(t).setImageResource(R.drawable.star_grey);
+                    try {
+                        Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() " + response);
+                        Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() score : " + response.body().getList().get(0).getMain().getAqi());
+                            /* 1 = 5 stars
+                               2 = 4 stars
+                               3 = 3 stars
+                               4 = 2 stars
+                               5 = 1 stars
+                               Air Quality Index. Possible values: 1, 2, 3, 4, 5. Where 1 = Good, 2 = Fair, 3 = Moderate, 4 = Poor, 5 = Very Poor.
+                             */
+                        int t = 0;
+                        for (int i = rating.size(); i != 0; i--) {
+                            if (i >= response.body().getList().get(0).getMain().getAqi()) {
+                                rating.get(t).setImageResource(R.drawable.star_yellow);
+                            } else {
+                                rating.get(t).setImageResource(R.drawable.star_grey);
+                            }
+                            t++;
                         }
-                        t++;
+                    } catch (Exception e) {
+                        Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() Error loading air quality data: " + e.getLocalizedMessage());
+                        error[0] ="RetrofitLibrary.getPollutionData() Error loading air quality data: " + e.getLocalizedMessage();
                     }
-                }catch(Exception e){
-                    Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() Error loading air quality data: " + e.getLocalizedMessage());
                 }
-            }
 
-            @Override
-            public void onFailure(Call<OpenWeatherAirQuality> call, Throwable t) {
-                Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() Retrofit did not return any pollution data");
-            }
-        });
+                @Override
+                public void onFailure(Call<OpenWeatherAirQuality> call, Throwable t) {
+                    Log.d("DENNIS_B", "RetrofitLibrary.getPollutionData() Retrofit did not return any pollution data");
+                    error[0] ="RetrofitLibrary.getPollutionData() Retrofit did not return any pollution data" + t.getLocalizedMessage();
+                }
+            });
+        }
+        finally{
+            return error[0];
+        }
 
     }
 
@@ -79,16 +85,24 @@ public class RetrofitLibrary {
             public void onResponse(Call<OpenWeatherMap> call, Response<OpenWeatherMap> response) {
 
                 try {
+                    if(response.isSuccessful()) {
+                        String error = RetrofitLibrary.getPollutionData(lat, lon, rating, context);
+                        if(!error.equals("")){
+                            broadcastErrorAlert(context, error, "main");
+                        }
 
-                    RetrofitLibrary.getPollutionData(lat, lon, rating, context);
+                        Log.d("DENNIS_B", response.toString());
+                        Log.d("DENNIS_B", response.body().toString());
 
-                    Log.d("DENNIS_B", response.toString());
-                    Log.d("DENNIS_B", response.body().toString());
-
-                    loadValuesIntoViews(weatherData, response, icon, context);
+                        loadValuesIntoViews(weatherData, response, icon, context, "main");
+                    } else {
+                        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() : call is not successful; no data found");
+                        broadcastErrorAlert(context, String.format("No new data found using latitude '%s' and longitude '%s'", lat, lon), "main");
+                    }
 
                 }catch(Exception e){
                     Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather data: " + e.getLocalizedMessage());
+                    broadcastErrorAlert(context, String.format("Error (exception) loading weather data '%s'", e.getLocalizedMessage()), "main");
                 }
 
             }
@@ -96,6 +110,7 @@ public class RetrofitLibrary {
             @Override
             public void onFailure(Call<OpenWeatherMap> call, Throwable t) {
                 Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): Retrofit did not return any weather data" + t.getLocalizedMessage());
+                broadcastErrorAlert(context, String.format("Error (onFailure) loading weather data '%s'", t.getLocalizedMessage()), "main");
             }
         });
 
@@ -114,20 +129,22 @@ public class RetrofitLibrary {
 
                 try {
                     if(response.isSuccessful()) {
-                        RetrofitLibrary.getPollutionData(response.body().getCoord().getLat(), response.body().getCoord().getLon(), rating, context);
+                        String error = RetrofitLibrary.getPollutionData(response.body().getCoord().getLat(), response.body().getCoord().getLon(), rating, context);
+                        if(!error.equals("")){
+                            broadcastErrorAlert(context, error, "city");
+                        }
 
                         Log.d("DENNIS_B", response.toString());
                         Log.d("DENNIS_B", response.body().toString());
 
-                        loadValuesIntoViews(weatherData, response, icon, context);
+                        loadValuesIntoViews(weatherData, response, icon, context, "city");
 
                         broadcastCallCompleteAlert(context, "city");  // this will let the fragment now the call ended correctly,
-                                                                           // stop the progressbar and show the views
+                                                                           // stop the progressbar and show the views -- city only
 
                     } else {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataCity() : call is not successful; no data found");
                         broadcastErrorAlert(context, String.format("No new data found using '%s'", city), "city");
-
                     }
 
                 }catch(Exception e){
@@ -146,7 +163,7 @@ public class RetrofitLibrary {
 
     }
 
-    private static void loadValuesIntoViews(Map<String, TextView> weatherData, Response<OpenWeatherMap> response, ImageView icon, Context context){
+    private static void loadValuesIntoViews(Map<String, TextView> weatherData, Response<OpenWeatherMap> response, ImageView icon, Context context, String type){
 
         weatherData.get("city").setText(response.body().getName() + ", " + response.body().getSys().getCountry());
         weatherData.get("condition").setText(response.body().getWeather().get(0).getDescription());
@@ -157,21 +174,8 @@ public class RetrofitLibrary {
         weatherData.get("wind").setText("" + response.body().getWind().getSpeed());
         weatherData.get("temp").setText(response.body().getMain().getTemp() + " °C");
 
-        // TODO = function or method for this -- also used in hours adapter
-        int intdate;
-        Calendar calendar = Calendar.getInstance();
-        String sdate="";
-        String stime="";
-
-        intdate = response.body().getDt();
-        calendar.setTimeInMillis(intdate * 1000L);
-        sdate = String.format("%02d-%02d-%04d",
-                calendar.get(Calendar.DAY_OF_MONTH),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.YEAR));
-        stime = String.format("%02d:%02d",
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE));
+        String sdate = ApplicationLibrary.getDateAsString(response.body().getDt());
+        String stime = ApplicationLibrary.getTimeAsString(response.body().getDt());
 
         weatherData.get("timestamp").setText(String.format("%s %s", sdate, stime));
 
@@ -184,19 +188,19 @@ public class RetrofitLibrary {
                     @Override
                     public void onSuccess() {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() weather icon loaded: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");
-                        broadcastProgressBarAlert(context, "?");
+                        broadcastProgressBarAlert(context, type);
                     }
 
                     @Override
                     public void onError(Exception e) {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather icon: " + e.getLocalizedMessage());
                         icon.setImageResource(R.mipmap.image870);
-                        broadcastProgressBarAlert(context, "?");
+                        broadcastProgressBarAlert(context, type);
                     }
                 });
     }
 
-    public static void getWeatherForecastData(double lat, double lon, RecyclerView recyclerView){
+    public static void getWeatherForecastData(double lat, double lon, RecyclerView recyclerView, Context context){
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
 
@@ -209,15 +213,21 @@ public class RetrofitLibrary {
 
 
                 try {
-                    Log.d("DENNIS_B", response.toString());
-                    Log.d("DENNIS_B", response.body().toString());
+                    if(response.isSuccessful()) {
+                        Log.d("DENNIS_B", response.toString());
+                        Log.d("DENNIS_B", response.body().toString());
 
-                    response.body().getList(); // data is declared as List<ModelClass> globally
-                    ForecastHourAdapter adapter = new ForecastHourAdapter(response.body().getList()); // create adapter and move data in as parameter
-                    recyclerView.setAdapter(adapter);
+                        response.body().getList(); // data is declared as List<ModelClass> globally
+                        ForecastHourAdapter adapter = new ForecastHourAdapter(response.body().getList()); // create adapter and move data in as parameter
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() : call is not successful; no data found");
+                        broadcastErrorAlert(context, String.format("No forecast data found using latitude '%s' and longitude '%s'", lat, lon), "main");
+                    }
 
                 }catch(Exception e){
                     Log.d("DENNIS_B", "Error loading weather forecast data: " + e.getLocalizedMessage());
+                    broadcastErrorAlert(context, String.format("Error (exception) loading weather forecast data '%s'", e.getLocalizedMessage()), "main");
                 }
 
             }
@@ -225,6 +235,7 @@ public class RetrofitLibrary {
             @Override
             public void onFailure(Call<OpenWeatherForecast> call, Throwable t) {
                 Log.d("DENNIS_B", "Retrofit did not return any weather forecast data " + t.getLocalizedMessage());
+                broadcastErrorAlert(context, String.format("Error (onFailure) loading forecast weather data '%s'", t.getLocalizedMessage()), "main");
             }
         });
     }

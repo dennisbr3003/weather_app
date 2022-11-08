@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dennis_brink.android.myweatherapp.AppConfig;
+import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
 import com.dennis_brink.android.myweatherapp.ForecastAdapter;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.RetrofitWeather;
@@ -36,12 +37,8 @@ public class FragmentForecast extends Fragment {
     List<Day> days = new ArrayList<>();
     ArrayList<Integer>imageList = new ArrayList<>();
     ForecastAdapter adapter;
-
-    int intdate;
-    Calendar xdate = Calendar.getInstance();
-    String sdate="";
+    
     String cdate="";
-    String stime="";
     int day_num=0;
     Day day=null;
 
@@ -120,19 +117,10 @@ public class FragmentForecast extends Fragment {
 
         for(int i=0; i < data.size(); i++ ){
 
-            //Log.d("DENNIS_B", "iteration i " + i);
+            String sdate = ApplicationLibrary.getDateAsString(data.get(i).getDt());
+            String stime = ApplicationLibrary.getTimeAsString(data.get(i).getDt());
 
-            intdate = data.get(i).getDt();
-            xdate.setTimeInMillis(intdate * 1000L);
-            sdate = String.format("%02d-%02d-%04d",
-                    xdate.get(Calendar.DAY_OF_MONTH),
-                    xdate.get(Calendar.MONTH) + 1,
-                    xdate.get(Calendar.YEAR));
-            stime = String.format("%02d:%02d",
-                    xdate.get(Calendar.HOUR_OF_DAY),
-                    xdate.get(Calendar.MINUTE));
-            //Log.d("DENNIS_B", "sdate " + sdate);
-            //Log.d("DENNIS_B", "cdate " + cdate);
+            Calendar calendar = Calendar.getInstance();
 
             if(cdate.equals("") || (!cdate.equals("") && !cdate.equals(sdate))){
 
@@ -145,7 +133,7 @@ public class FragmentForecast extends Fragment {
                 cdate = sdate;
                 day = new Day();
                 day.setId(day_num);
-                day.setDayofweek(xdate.get(Calendar.DAY_OF_WEEK));
+                day.setDayofweek(calendar.get(Calendar.DAY_OF_WEEK));
                 day.setDate(cdate);
                 day_num++;
             }

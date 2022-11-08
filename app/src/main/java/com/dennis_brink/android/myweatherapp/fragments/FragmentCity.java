@@ -1,14 +1,17 @@
 package com.dennis_brink.android.myweatherapp.fragments;
 
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -202,9 +205,11 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
     public void showErrorMessage(String text, String type) {
         Log.d("DENNIS_B", "FragmentCity.showErrorMessage() receiver reached for type: " + type);
         // if a data error occurs do nothing. Just show there is no data found.
-        if(type.equals("city")) {
-            Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+        if(type.equals("city")) {  // listeners are the same in all fragments type makes sure
+                                   // the correct dialog is shown, and only once (bit tricky)
+            ApplicationLibrary.getErrorAlertDialog(text, getActivity()).show();
         }
+
     }
 
     @Override

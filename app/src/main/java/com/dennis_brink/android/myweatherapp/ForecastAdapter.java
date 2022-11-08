@@ -10,14 +10,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dennis_brink.android.myweatherapp.model_day.Day;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHolder> {
@@ -45,16 +43,16 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
         holder.textViewDate.setText(data.get(position).getDate());
         holder.textViewDayDisplay.setText(data.get(position).getDay_display());
-        holder.textViewTemp.setText(formatToOneDecimal(data.get(position).getTemp()) + " °C");
-        holder.textViewMin.setText(formatToOneDecimal(data.get(position).getMintemp()) + " °");
-        holder.textViewMax.setText(formatToOneDecimal(data.get(position).getMaxtemp()) + " °");
+        holder.textViewTemp.setText(ApplicationLibrary.formatToDecimals(data.get(position).getTemp(), 1) + " °C");
+        holder.textViewMin.setText(ApplicationLibrary.formatToDecimals(data.get(position).getMintemp(), 1) + " °");
+        holder.textViewMax.setText(ApplicationLibrary.formatToDecimals(data.get(position).getMaxtemp(), 1) + " °");
         holder.textViewConditionDay.setText(data.get(position).getCondition());
         if(data.size() > 5) {
             holder.imageViewCardBackground.setImageResource(imageList.get(position));
         } else {
             holder.imageViewCardBackground.setImageResource(imageList.get(position + 1));
         }
-        holder.textViewWindDay.setText(""+formatToOneDecimal(data.get(position).getWind()));
+        holder.textViewWindDay.setText(""+ApplicationLibrary.formatToDecimals(data.get(position).getWind(), 1));
 
         if(!data.get(position).getRain_time().isEmpty()) {
             holder.imageViewRainDay.setVisibility(View.VISIBLE);
@@ -112,14 +110,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
             textViewRainDay = itemView.findViewById(R.id.textViewRainDay);
             imageViewRainDay = itemView.findViewById(R.id.imageViewRainDay);
         }
-    }
-
-    private double formatToOneDecimal(double x){
-
-        String sx = String.format("%.1f", x);
-        sx = sx.replaceAll(",", ".");
-        double d = Double.parseDouble(sx);
-        return d;
     }
 
 }

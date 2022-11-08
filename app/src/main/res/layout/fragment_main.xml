@@ -144,7 +144,7 @@
                     android:id="@+id/imageViewNoNetworkLocal"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:src="@drawable/nonetwork825"
+                    android:src="@drawable/g921"
                     android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
