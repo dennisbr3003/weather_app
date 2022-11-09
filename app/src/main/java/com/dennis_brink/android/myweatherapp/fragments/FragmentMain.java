@@ -82,19 +82,14 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
 
     private void setupListenersAndInitData(){
 
-        progressBar.setVisibility(View.VISIBLE);
-
         setupLocationListener();
 
         // permission was already obtained in the main activity, so we do not ask for it here.
 
         Log.d("DENNIS_B", "Connection avail on startup " + AppConfig.getInstance().hasConnectionOnStartup());
 
-        if((ContextCompat.checkSelfPermission(getActivity(),
-                                              Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) &&
-                AppConfig.getInstance().hasConnectionOnStartup()){ // connection must be there
-
-            imageViewNoNetworkLocal.setVisibility(View.INVISIBLE);
+        if(ContextCompat.checkSelfPermission(getActivity(),
+                                              Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
@@ -103,9 +98,18 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
                 Log.d("DENNIS_B", "FragmentMain.onStart(): use the last known location (age <= 2 mins)");
                 lat = location.getLatitude();
                 lon = location.getLongitude();
+                AppConfig.getInstance().setLatitude(lat);
+                AppConfig.getInstance().setLongitude(lon);
                 Log.d("DENNIS_B", "FragmentMain.onStart(): last known location lat/lon " + lat + "/" + lon);
-                RetrofitLibrary.getWeatherDataLocal(lat, lon, rating, weatherData, imageViewIcon, getContext());
-                RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour, getContext());
+                if(AppConfig.getInstance().hasConnectionOnStartup()) {// connection must be there
+                    progressBar.setVisibility(View.VISIBLE);
+                    imageViewNoNetworkLocal.setVisibility(View.INVISIBLE);
+                    RetrofitLibrary.getWeatherDataLocal(lat, lon, rating, weatherData, imageViewIcon, getContext());
+                    RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour, getContext());
+                }
+                else {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
 
             }
             else {
@@ -284,15 +288,20 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
             @Override
             public void onLocationChanged(@NonNull Location location) { // user location
 
-                imageViewNoNetworkLocal.setVisibility(View.INVISIBLE);
                 Log.d("DENNIS_B", "FragmentMain.setupLocationListener().onLocationChanged(): location changed");
 
                 lat = location.getLatitude();
                 lon = location.getLongitude();
+                AppConfig.getInstance().setLatitude(lat);
+                AppConfig.getInstance().setLongitude(lon);
                 Log.d("DENNIS_B", "FragmentMain.setupLocationListener().onLocationChanged(): latitude " + lat + " longitude " + lon);
-
-                RetrofitLibrary.getWeatherDataLocal(lat, lon, rating, weatherData, imageViewIcon, getContext());
-                RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour, getContext());
+                if(AppConfig.getInstance().hasConnectionOnStartup()) {
+                    imageViewNoNetworkLocal.setVisibility(View.INVISIBLE);
+                    RetrofitLibrary.getWeatherDataLocal(lat, lon, rating, weatherData, imageViewIcon, getContext());
+                    RetrofitLibrary.getWeatherForecastData(lat, lon, rvForecastHour, getContext());
+                } else {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
 
             }
         };
@@ -307,6 +316,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, IPermiss
         Log.d("DENNIS_B", "FragmentMain.showErrorMessage() receiver reached for type: " + type);
         if(type.equals("main")) {  // listeners are the same in all fragments type makes sure
             // the correct dialog is shown, and only once (bit tricky)
+            progressBar.setVisibility(View.INVISIBLE);
             ApplicationLibrary.getErrorAlertDialog(text, getActivity()).show();
         }
     }

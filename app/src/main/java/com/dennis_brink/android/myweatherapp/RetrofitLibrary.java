@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dennis_brink.android.myweatherapp.model_airquality.OpenWeatherAirQuality;
+import com.dennis_brink.android.myweatherapp.model_day.Day;
+import com.dennis_brink.android.myweatherapp.model_forecast.List;
 import com.dennis_brink.android.myweatherapp.model_forecast.OpenWeatherForecast;
 import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
 import com.squareup.picasso.Picasso;
@@ -174,8 +176,8 @@ public class RetrofitLibrary {
         weatherData.get("wind").setText("" + response.body().getWind().getSpeed());
         weatherData.get("temp").setText(response.body().getMain().getTemp() + " °C");
 
-        String sdate = ApplicationLibrary.getDateAsString(response.body().getDt());
-        String stime = ApplicationLibrary.getTimeAsString(response.body().getDt());
+        String sdate = ApplicationLibrary.getDate(response.body().getDt());
+        String stime = ApplicationLibrary.getTime(response.body().getDt());
 
         weatherData.get("timestamp").setText(String.format("%s %s", sdate, stime));
 
@@ -238,6 +240,112 @@ public class RetrofitLibrary {
                 broadcastErrorAlert(context, String.format("Error (onFailure) loading forecast weather data '%s'", t.getLocalizedMessage()), "main");
             }
         });
+    }
+
+    public static void getWeatherForecastDataByDay(RecyclerView recyclerView, Context context) {
+
+        WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
+
+        double lat = AppConfig.getInstance().getLatitude(); // contains values from main page (location = here)
+        double lon = AppConfig.getInstance().getLongitude();
+
+        Log.d("DENNIS_B", "getWeatherForecastDataByDay() lat/lon: " + lat + "/" + lon);
+
+        if (lat==0 && lon==0){
+            broadcastErrorAlert(context, String.format("Error. No location was determined yet (lat = 0, lon = 0). Unable to get correct local forecast data"), "fcast");
+        }
+
+        Call<OpenWeatherForecast> call = weatherApi.getWeatherForecast(lat, lon, AppConfig.getInstance().getApi_key());
+        call.enqueue(new Callback<OpenWeatherForecast>() {
+
+            @Override
+            public void onResponse(Call<OpenWeatherForecast> call, Response<OpenWeatherForecast> response) {
+
+                try {
+                    if(response.isSuccessful()) {
+                        Log.d("DENNIS_B", response.toString());
+                        Log.d("DENNIS_B", response.body().toString());
+
+                        java.util.List<Day> days = new ArrayList<>();
+
+                        days = processForecast(response.body().getList(), days);
+                        Log.d("DENNIS_B", days.toString());
+                        ForecastAdapter adapter = new ForecastAdapter(days, context); // create adapter and move data in as parameter
+                        recyclerView.setAdapter(adapter);
+
+                        broadcastProgressBarAlert(context, "fcast");
+
+                    } else {
+                        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherForecastDataByDay() : call is not successful; no data found");
+                        broadcastErrorAlert(context, String.format("No forecast data found using latitude '%s' and longitude '%s'", lat, lon), "fcast");
+                    }
+
+                }catch(Exception e){
+                    Log.d("DENNIS_B", "Error loading weather forecast data: " + e.getLocalizedMessage());
+                    broadcastErrorAlert(context, String.format("Error (exception) loading weather forecast data '%s'", e.getLocalizedMessage()), "fcast");
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<OpenWeatherForecast> call, Throwable t) {
+                Log.d("DENNIS_B", "Retrofit did not return any weather forecast data " + t.getLocalizedMessage());
+                broadcastErrorAlert(context, String.format("Error (onFailure) loading forecast weather data '%s'", t.getLocalizedMessage()), "fcast");
+            }
+        });
+    }
+
+    private static java.util.List<Day> processForecast(java.util.List<List> data,  java.util.List<Day> days) {
+
+        String cdate="";
+        int day_num=0;
+        Day day=null;
+
+        for(int i=0; i < data.size(); i++ ){
+
+            String sdate = ApplicationLibrary.getDate(data.get(i).getDt());
+            String stime = ApplicationLibrary.getTime(data.get(i).getDt());
+
+            if(cdate.equals("") || (!cdate.equals("") && !cdate.equals(sdate))){
+
+                if(day!=null){
+                    Log.d("DENNIS_B", day.toString());
+                    days.add(day);
+                }
+
+                // create new day
+                cdate = sdate;
+                day = new Day();
+                day.setId(day_num);
+                day.setDayofweek(ApplicationLibrary.getDayOfWeek(data.get(i).getDt()));
+                day.setDate(cdate);
+                day_num++;
+            }
+            // day is aangemaakt --> vullen
+            day.setHumidity(data.get(i).getMain().getHumidity());
+            day.setMaxtemp(data.get(i).getMain().getTempMax());
+            day.setMintemp(data.get(i).getMain().getTempMin());
+            day.setPressure(data.get(i).getMain().getPressure());
+            day.setTemp(data.get(i).getMain().getTemp());
+            day.setIcon(data.get(i).getWeather().get(0).getIcon());
+            day.setWind(data.get(i).getWind().getSpeed());
+
+            day.setCondition(data.get(i).getWeather().get(0).getDescription());
+            day.setMeasurements(1);
+            try {
+                if(day.getRain_time().isEmpty()) {
+                    if (data.get(i).getRain().get3h() != 0) {
+                        Log.d("DENNIS_B", "rain found coming at " + stime);
+                        day.setRain_time(stime);
+                    }
+                }
+            } catch(Exception e){
+                Log.d("DENNIS_B", "rain not found");
+            }
+        }
+        days.add(day);
+        Log.d("DENNIS_B", "number of days created " + days.size());
+        return days;
     }
 
     private static void broadcastErrorAlert(Context context, String text, String type) {

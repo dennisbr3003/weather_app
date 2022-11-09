@@ -11,15 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.dennis_brink.android.myweatherapp.model_day.Day;
 import com.squareup.picasso.Picasso;
 
-import java.text.DateFormat;
 import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,9 +24,12 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
 
     DateFormatSymbols symbols = new DateFormatSymbols(new Locale("en"));
     String dayShortNames[] = symbols.getShortWeekdays();
+    String today = "";
+    String tomorrow = "";
 
     public ForecastHourAdapter(List<com.dennis_brink.android.myweatherapp.model_forecast.List> data) {
         this.data = data;
+        initDates();
     }
 
     @NonNull
@@ -45,23 +43,9 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        Calendar calendar = Calendar.getInstance();
-        String today = String.format("%02d-%02d-%04d",
-                       calendar.get(Calendar.DAY_OF_MONTH),
-                       calendar.get(Calendar.MONTH) + 1,
-                       calendar.get(Calendar.YEAR));
-
-        calendar.add(Calendar.DATE, 1);
-
-        String tomorrow = String.format("%02d-%02d-%04d",
-                          calendar.get(Calendar.DAY_OF_MONTH),
-                          calendar.get(Calendar.MONTH) + 1,
-                          calendar.get(Calendar.YEAR));;
-
-        String sdate = ApplicationLibrary.getDateAsString(data.get(position).getDt());
-        String stime = ApplicationLibrary.getTimeAsString(data.get(position).getDt());
-
-        int weekday=calendar.get(Calendar.DAY_OF_WEEK);
+        String sdate = ApplicationLibrary.getDate(data.get(position).getDt());
+        String stime = ApplicationLibrary.getTime(data.get(position).getDt());
+        int weekday = ApplicationLibrary.getDayOfWeek(data.get(position).getDt());
 
         Log.d("DENNIS_B", "date " + sdate + " weekday " + weekday);
 
@@ -124,6 +108,23 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
             imageViewIconHour = itemView.findViewById(R.id.imageViewIconHour);
             textViewWindForceHour = itemView.findViewById(R.id.textViewWindForceHour);
         }
+    }
+
+    private void initDates(){
+
+        Calendar calendar = Calendar.getInstance();
+
+        today = String.format("%02d-%02d-%04d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR));
+
+        calendar.add(Calendar.DATE, 1);
+
+        tomorrow = String.format("%02d-%02d-%04d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR));;
     }
 
 }

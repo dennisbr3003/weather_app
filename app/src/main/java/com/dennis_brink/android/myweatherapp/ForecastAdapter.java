@@ -21,13 +21,15 @@ import java.util.List;
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHolder> {
 
     private List<Day> data;
-    private ArrayList<Integer> imageList;
     private Context context;
 
-    public ForecastAdapter(List<Day> days, ArrayList<Integer> imageList, Context context) {
+    //static java.util.List<Day> days = new ArrayList<>();
+    private ArrayList<Integer>imageList = new ArrayList<>();
+
+    public ForecastAdapter(List<Day> days, Context context) {
         this.data = days;
-        this.imageList = imageList;
         this.context = context;
+        loadImageList();
     }
 
     @NonNull
@@ -110,6 +112,15 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
             textViewRainDay = itemView.findViewById(R.id.textViewRainDay);
             imageViewRainDay = itemView.findViewById(R.id.imageViewRainDay);
         }
+    }
+
+    private void loadImageList(){
+        imageList.add(R.drawable.item00);
+        imageList.add(R.drawable.item0);
+        imageList.add(R.drawable.item1);
+        imageList.add(R.drawable.item2);
+        imageList.add(R.drawable.item3);
+        imageList.add(R.drawable.item4);
     }
 
 }

@@ -113,7 +113,7 @@ public class ApplicationLibrary {
     }
 
     @SuppressLint("DefaultLocale")
-    public static String getTimeAsString(int timeInMillies){
+    public static String getTime(int timeInMillies){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeInMillies * 1000L); // to stop overflow
         return String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY),
@@ -121,12 +121,28 @@ public class ApplicationLibrary {
     }
 
     @SuppressLint("DefaultLocale")
-    public static String getDateAsString(int timeInMillies){
+    public static String getDate(int timeInMillies){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeInMillies * 1000L); // to stop overflow
         return String.format("%02d-%02d-%04d", calendar.get(Calendar.DAY_OF_MONTH),
                                                calendar.get(Calendar.MONTH) + 1,
                                                calendar.get(Calendar.YEAR));
+    }
+
+    public static int getDayOfWeek(int timeInMillies){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeInMillies * 1000L); // to stop overflow
+        return calendar.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public static String getTodayDateTime(){
+        Calendar calendar = Calendar.getInstance();
+        return String.format("%02d-%02d-%04d %02d:%02d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE));
     }
 
     public static double formatToDecimals(double number, int decimals){

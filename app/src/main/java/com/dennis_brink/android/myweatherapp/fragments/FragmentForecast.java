@@ -1,5 +1,6 @@
 package com.dennis_brink.android.myweatherapp.fragments;
 
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,60 +11,64 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.dennis_brink.android.myweatherapp.AppConfig;
 import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
-import com.dennis_brink.android.myweatherapp.ForecastAdapter;
+import com.dennis_brink.android.myweatherapp.INetworkStateListener;
+import com.dennis_brink.android.myweatherapp.IWeatherListener;
 import com.dennis_brink.android.myweatherapp.R;
-import com.dennis_brink.android.myweatherapp.RetrofitWeather;
-import com.dennis_brink.android.myweatherapp.WeatherApi;
+import com.dennis_brink.android.myweatherapp.Receiver;
+import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
 import com.dennis_brink.android.myweatherapp.model_day.Day;
-import com.dennis_brink.android.myweatherapp.model_forecast.OpenWeatherForecast;
-import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class FragmentForecast extends Fragment {
+public class FragmentForecast extends Fragment implements IWeatherListener, INetworkStateListener {
 
     RecyclerView rvForecast;
-    List<com.dennis_brink.android.myweatherapp.model_forecast.List> data;
-    List<Day> days = new ArrayList<>();
-    ArrayList<Integer>imageList = new ArrayList<>();
-    ForecastAdapter adapter;
-    
-    String cdate="";
-    int day_num=0;
-    Day day=null;
+    Receiver receiver = null;
+    private ImageView imageViewNoNetworkForecast;
+    private ProgressBar progressBarForecast;
+    private boolean lConnectionLost = false;
+    private TextView txtApiTimeStamp;
 
     public static FragmentForecast newInstance() {
         return new FragmentForecast();
     }
 
     @Override
+    public void onResume() { // load data here for continued fresh data
+        super.onResume();
+        Log.d("DENNIS_B", "FragmetForecast.onResume(): Connection available " + AppConfig.getInstance().hasConnectionOnStartup());
+        if(AppConfig.getInstance().hasConnectionOnStartup() && !lConnectionLost) {
+            progressBarForecast.setVisibility(View.VISIBLE);
+            RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity());
+        } else {
+            try {
+                if (rvForecast!=null && rvForecast.getAdapter().getItemCount() == 0) { // empty
+                    imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
+                }
+            }catch(Exception e){
+                // no recyclerview is shown yet
+                imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
-        getWeatherForecastData();
-        loadImageList();
+        if(receiver == null){
+            receiver = new Receiver();
+            receiver.setWeatherListener(this);
+            receiver.setNetworkStateListener(this);
+        }
+        getActivity().registerReceiver(receiver, getFilter());
     }
-
-    private void loadImageList(){
-
-        imageList.add(R.drawable.item00);
-        imageList.add(R.drawable.item0);
-        imageList.add(R.drawable.item1);
-        imageList.add(R.drawable.item2);
-        imageList.add(R.drawable.item3);
-        imageList.add(R.drawable.item4);
-
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,95 +76,73 @@ public class FragmentForecast extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_forecast, container, false);
 
+        imageViewNoNetworkForecast = view.findViewById(R.id.imageViewNoNetworkForecast);
+        progressBarForecast = view.findViewById(R.id.progressBarForecast);
+        txtApiTimeStamp = view.findViewById(R.id.textViewApi20);
+
         rvForecast = view.findViewById(R.id.rvDays);
         rvForecast.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         return view;
 
     }
 
-    private void getWeatherForecastData(){
-
-        WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
-
-        Log.d("DENNIS_B", "getWeatherForecastData() lat/lon: 51.4574544 / 5.6377686");
-
-        Call<OpenWeatherForecast> call = weatherApi.getWeatherForecast(51.4574544, 5.6377686, "eda35914aa73c5ac26a4d657718b1dbc");
-        call.enqueue(new Callback<OpenWeatherForecast>() {
-            @Override
-            public void onResponse(Call<OpenWeatherForecast> call, Response<OpenWeatherForecast> response) {
-
-
-                try {
-                    Log.d("DENNIS_B", response.toString());
-                    Log.d("DENNIS_B", response.body().toString());
-
-                    data = response.body().getList(); // data is declared as List<ModelClass> globally
-                    days = processForecast(data);
-                    Log.d("DENNIS_B", days.toString());
-                    adapter = new ForecastAdapter(days, imageList, getActivity()); // create adapter and move data in as parameter
-                    rvForecast.setAdapter(adapter);
-
-                }catch(Exception e){
-                    Log.d("DENNIS_B", "Error loading weather forecast data: " + e.getLocalizedMessage());
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<OpenWeatherForecast> call, Throwable t) {
-                Log.d("DENNIS_B", "Retrofit did not return any weather forecast data " + t.getLocalizedMessage());
-            }
-        });
+    private IntentFilter getFilter(){
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("LOCAL_WEATHER_DATA_ERROR"); // only register receiver for this event
+        intentFilter.addAction("STOP_PROGRESS_BAR");
+        intentFilter.addAction("CALL_COMPLETE");
+        intentFilter.addAction("NETWORK_CONNECTION_LOST");
+        intentFilter.addAction("NETWORK_CONNECTION_AVAILABLE");
+        return intentFilter;
     }
 
-    private List<Day> processForecast(List<com.dennis_brink.android.myweatherapp.model_forecast.List> data) {
-
-
-        for(int i=0; i < data.size(); i++ ){
-
-            String sdate = ApplicationLibrary.getDateAsString(data.get(i).getDt());
-            String stime = ApplicationLibrary.getTimeAsString(data.get(i).getDt());
-
-            Calendar calendar = Calendar.getInstance();
-
-            if(cdate.equals("") || (!cdate.equals("") && !cdate.equals(sdate))){
-
-                if(day!=null){
-                    Log.d("DENNIS_B", day.toString());
-                    days.add(day);
-                }
-
-                // create new day
-                cdate = sdate;
-                day = new Day();
-                day.setId(day_num);
-                day.setDayofweek(calendar.get(Calendar.DAY_OF_WEEK));
-                day.setDate(cdate);
-                day_num++;
-            }
-            // day is aangemaakt --> vullen
-            day.setHumidity(data.get(i).getMain().getHumidity());
-            day.setMaxtemp(data.get(i).getMain().getTempMax());
-            day.setMintemp(data.get(i).getMain().getTempMin());
-            day.setPressure(data.get(i).getMain().getPressure());
-            day.setTemp(data.get(i).getMain().getTemp());
-            day.setIcon(data.get(i).getWeather().get(0).getIcon());
-            day.setWind(data.get(i).getWind().getSpeed());
-
-            day.setCondition(data.get(i).getWeather().get(0).getDescription());
-            day.setMeasurements(1);
-            try {
-                if(day.getRain_time().isEmpty()) {
-                    if (data.get(i).getRain().get3h() != 0) {
-                        Log.d("DENNIS_B", "rain found coming at " + stime);
-                        day.setRain_time(stime);
-                    }
-                }
-            } catch(Exception e){
-                Log.d("DENNIS_B", "rain not found");
-            }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (receiver != null){
+            Log.d("DENNIS_B", "FragmentForecast.onDestroy(): unregistering receiver");
+            getActivity().unregisterReceiver(receiver);
+            receiver = null;
         }
-        days.add(day);
-        return days;
+    }
+
+    @Override
+    public void networkStateChanged(String state) {
+        Log.d("DENNIS_B", "FragmentForecast.networkStateChanged(state) receiver reached with " + state);
+        switch(state){
+            case "NETWORK_CONNECTION_LOST":
+                lConnectionLost = true;
+                break;
+            case "NETWORK_CONNECTION_AVAILABLE":
+                AppConfig.getInstance().setConnectionOnStartup(true);
+                imageViewNoNetworkForecast.setVisibility(View.INVISIBLE);
+                progressBarForecast.setVisibility(View.VISIBLE);
+                RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity());
+                break;
+        }
+    }
+
+    @Override
+    public void showErrorMessage(String text, String type) {
+        Log.d("DENNIS_B", "FragmentForecast.showErrorMessage() receiver reached for type: " + type);
+        if(type.equals("fcast")) {  // listeners are the same in all fragments type makes sure
+            // the correct dialog is shown, and only once (bit tricky)
+            ApplicationLibrary.getErrorAlertDialog(text, getActivity()).show();
+        }
+    }
+
+    @Override
+    public void stopProgressBar(String type) {
+        Log.d("DENNIS_B", "FragmentForecast.stopProgressBar() receiver reached with type: " + type);
+
+        progressBarForecast.setVisibility(View.INVISIBLE);
+        rvForecast.setVisibility(View.VISIBLE);
+        txtApiTimeStamp.setText(ApplicationLibrary.getTodayDateTime());
+
+    }
+
+    @Override
+    public void callComplete(String type) {
+
     }
 }
