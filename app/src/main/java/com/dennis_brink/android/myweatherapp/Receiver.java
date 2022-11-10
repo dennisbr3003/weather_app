@@ -10,6 +10,7 @@ public class Receiver extends BroadcastReceiver {
     private IWeatherListener weatherListener;
     private IPermissionListener permissionListener;
     private INetworkStateListener networkStateListener;
+    private ILocationListener wlocationListener;
 
     public void setWeatherListener(IWeatherListener weatherListener){
         this.weatherListener = weatherListener;
@@ -21,6 +22,10 @@ public class Receiver extends BroadcastReceiver {
 
     public void setNetworkStateListener(INetworkStateListener networkStateListener){
         this.networkStateListener = networkStateListener;
+    }
+
+    public void setLocationListener(ILocationListener wlocationListener){
+        this.wlocationListener = wlocationListener;
     }
 
     @Override
@@ -58,6 +63,11 @@ public class Receiver extends BroadcastReceiver {
             }
         }
 
+        if(intent.getAction().equals("LOCATION_CHANGED")) {
+            if (wlocationListener != null) {
+                wlocationListener.locationChanged();
+            }
+        }
 
     }
 

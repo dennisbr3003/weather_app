@@ -50,21 +50,16 @@ public class AppConfig {
 
     private static boolean getDarkThemeActive() {
 
-        Log.d("DENNIS_B", "Determine if dark theme is active");
-
         int nightModeFlags;
 
         nightModeFlags = Application.getContext().getResources().getConfiguration().uiMode & UI_MODE_NIGHT_MASK;
 
         switch (nightModeFlags) {
             case UI_MODE_NIGHT_YES:
-                Log.d("DENNIS_B", "UI_MODE_NIGHT_YES");
                 return true;
             case UI_MODE_NIGHT_NO:
-                Log.d("DENNIS_B", "UI_MODE_NIGHT_NO");
                 return false;
             case UI_MODE_NIGHT_UNDEFINED:
-                Log.d("DENNIS_B", "UI_MODE_NIGHT_UNDEFINED");
                 return false;
             default:
                 throw new IllegalStateException("Unexpected value: " + nightModeFlags);

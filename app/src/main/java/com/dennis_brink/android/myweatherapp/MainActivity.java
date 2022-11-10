@@ -36,27 +36,42 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ILocationListener {
 
     private TabLayout tabLayout;
     private ViewPager2 viewPager2;
+    private final String TAG = "DENNIS_B";
 
-    //LocationManager locationManager;
-    //LocationListener locationListener;
-    double lat, lon;
+    LocationLibrary locationLibrary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getAPIkey();
-
-        // ask for permission to access user location if needed
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            // we do not have permission to access the location...
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        } else {
+            //we have permission to access the location...
+            initWeatherAppFragments();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    private void initWeatherAppFragments(){
+
+        if(!getAPIkey()){ // API key is essential to getting data
+            finish();
+        }
+
         setupNetworkStateListener();
+        initWeatherAppLocation();
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.viewPagerMain);
@@ -81,16 +96,9 @@ public class MainActivity extends AppCompatActivity {
         tabLayoutMediator.attach();
 
         AppConfig.getInstance().setConnectionOnStartup(isNetworkAvailable());
-
     }
 
-    @Override
-    public void onBackPressed() {
-        //super.onBackPressed();
-        finish();
-    }
-
-    private void getAPIkey(){
+    private boolean getAPIkey(){
 
         String line;
         InputStream in;
@@ -99,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
         try {
             in = am.open("datasource.config.json");
         } catch (IOException e) {
-            Log.d("DENNIS_B", "MainActivity.getApiKey(): error (IOException) : " + e.getLocalizedMessage());
-            return;
+            Log.d(TAG, "MainActivity.getApiKey(): error (IOException) : " + e.getLocalizedMessage());
+            return false;
         }
 
         StringBuilder str = new StringBuilder();
@@ -110,23 +118,23 @@ public class MainActivity extends AppCompatActivity {
                 str.append(line.replaceAll("\\s", ""));
             }
         } catch(Exception e) {
-            Log.d("DENNIS_B", "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage() + e.getMessage());
-            return;
+            Log.d(TAG, "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage() + e.getMessage());
+            return false;
         }
 
-        Log.d("DENNIS_B", "MainActivity.getApiKey(): string : " + str);
+        Log.d(TAG, "MainActivity.getApiKey(): string : " + str);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
             OpenWeatherConfig openWeatherConfig = mapper.readValue(str.toString(), OpenWeatherConfig.class);
-            Log.d("DENNIS_B", "getApiKey() key : " + openWeatherConfig.getDatasource().getKey());
             AppConfig.getInstance().setApi_key(openWeatherConfig.getDatasource().getKey());
+            return true;
         } catch (JsonProcessingException e) {
-            Log.d("DENNIS_B", "MainActivity.getApiKey(): error (JsonProcessingException) : " + e.getLocalizedMessage());
-            return;
+            Log.d(TAG, "MainActivity.getApiKey(): error (JsonProcessingException) : " + e.getLocalizedMessage());
+            return false;
         } catch (Exception e) {
-            Log.d("DENNIS_B", "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage());
-            return;
+            Log.d(TAG, "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage());
+            return false;
         }
     }
 
@@ -135,10 +143,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(requestCode == 1 && permissions.length > 0 && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            // granted
-            broadcastLocationPermission(this);
+            initWeatherAppFragments();
         } else {
-            // no permission to access user location. Shut down.
+            Log.d(TAG, "MainActivity.onRequestPermissionsResult(): access to device location denied by user");
             Toast.makeText(this, "Access to location is needed in order to get data", Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -150,6 +157,15 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
         Log.d("DENNIS_B", "MainActivity.isNetworkAvailable() : " + (activeNetworkInfo != null && activeNetworkInfo.isConnected()));
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void initWeatherAppLocation(){
+
+        locationLibrary = new LocationLibrary(this); // used in initWeatherApp
+
+        locationLibrary.setupLocationListener(this);
+        locationLibrary.getCurrentLocation(this);
+
     }
 
 
@@ -184,15 +200,6 @@ public class MainActivity extends AppCompatActivity {
         cm.registerNetworkCallback(builder.build(), callback);
     }
 
-    private static void broadcastLocationPermission(Context context) {
-
-        Log.d("DENNIS_B", String.format("MainActivity.broadcastLocationPermission(): sending 'LOCATION_PERMISSION_GRANTED' "));
-        Intent i = new Intent();
-        i.setAction("LOCATION_PERMISSION_GRANTED");
-        context.sendBroadcast(i);
-
-    }
-
     private static void broadcastNetworkState(Context context, String state) {
 
         Log.d("DENNIS_B", String.format("MainActivity.broadcastNetworkState(): sending " + state));
@@ -202,5 +209,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void locationChanged() {
+
+    }
 
 }
