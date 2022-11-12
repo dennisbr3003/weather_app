@@ -33,12 +33,6 @@ public class Receiver extends BroadcastReceiver {
 
         Log.d("DENNIS_B", "Receiver.onReceive() :  Receiver reached with action " + intent.getAction());
 
-        if(intent.getAction().equals("STOP_PROGRESS_BAR")) {
-            if (weatherListener != null) {
-                weatherListener.stopProgressBar(intent.getStringExtra("type"));
-            }
-        }
-
         if(intent.getAction().equals("CALL_COMPLETE")) {
             if (weatherListener != null) {
                 weatherListener.callComplete(intent.getStringExtra("type"));
@@ -65,7 +59,7 @@ public class Receiver extends BroadcastReceiver {
 
         if(intent.getAction().equals("LOCATION_CHANGED")) {
             if (wlocationListener != null) {
-                wlocationListener.locationChanged();
+                wlocationListener.locationChanged(intent.getDoubleExtra("lat", 0), intent.getDoubleExtra("lon", 0));
             }
         }
 

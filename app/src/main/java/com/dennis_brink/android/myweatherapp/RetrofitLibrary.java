@@ -97,6 +97,7 @@ public class RetrofitLibrary {
                         Log.d("DENNIS_B", response.body().toString());
 
                         loadValuesIntoViews(weatherData, response, icon, context, "main");
+
                     } else {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() : call is not successful; no data found");
                         broadcastErrorAlert(context, String.format("No new data found using latitude '%s' and longitude '%s'", lat, lon), "main");
@@ -141,7 +142,7 @@ public class RetrofitLibrary {
 
                         loadValuesIntoViews(weatherData, response, icon, context, "city");
 
-                        broadcastCallCompleteAlert(context, "city");  // this will let the fragment now the call ended correctly,
+                        //broadcastCallCompleteAlert(context, "city");  // this will let the fragment now the call ended correctly,
                                                                            // stop the progressbar and show the views -- city only
 
                     } else {
@@ -181,6 +182,22 @@ public class RetrofitLibrary {
 
         weatherData.get("timestamp").setText(String.format("%s %s", sdate, stime));
 
+        // sunset and sunrise are not corrected for timezone, so they are in device local time
+        int time_timezone;
+        if(response.body().getTimezone() <= 0 ) {
+            time_timezone = response.body().getSys().getSunrise() - (Math.abs(response.body().getTimezone()));
+        } else {
+            time_timezone = response.body().getSys().getSunrise() + (Math.abs(response.body().getTimezone()));
+        }
+        weatherData.get("sunrise").setText(ApplicationLibrary.getTime(time_timezone));
+
+        if(response.body().getTimezone() <= 0 ) {
+            time_timezone = response.body().getSys().getSunset() - (Math.abs(response.body().getTimezone()));
+        } else {
+            time_timezone = response.body().getSys().getSunset() + (Math.abs(response.body().getTimezone()));
+        }
+        weatherData.get("sunset").setText(ApplicationLibrary.getTime(time_timezone));
+
         String iconCode = response.body().getWeather().get(0).getIcon();
 
         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() icon: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");
@@ -190,14 +207,15 @@ public class RetrofitLibrary {
                     @Override
                     public void onSuccess() {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() weather icon loaded: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");
-                        broadcastProgressBarAlert(context, type);
+                        //broadcastProgressBarAlert(context, type);
+                        broadcastCallCompleteAlert(context, type);
                     }
 
                     @Override
                     public void onError(Exception e) {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather icon: " + e.getLocalizedMessage());
                         icon.setImageResource(R.mipmap.image870);
-                        broadcastProgressBarAlert(context, type);
+                        broadcastCallCompleteAlert(context, type);
                     }
                 });
     }
@@ -242,12 +260,12 @@ public class RetrofitLibrary {
         });
     }
 
-    public static void getWeatherForecastDataByDay(RecyclerView recyclerView, Context context) {
+    public static void getWeatherForecastDataByDay(RecyclerView recyclerView, Context context, double lat, double lon) {
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
 
-        double lat = AppConfig.getInstance().getLatitude(); // contains values from main page (location = here)
-        double lon = AppConfig.getInstance().getLongitude();
+        //double lat = AppConfig.getInstance().getLatitude(); // contains values from main page (location = here)
+        //double lon = AppConfig.getInstance().getLongitude();
 
         Log.d("DENNIS_B", "getWeatherForecastDataByDay() lat/lon: " + lat + "/" + lon);
 
@@ -273,7 +291,8 @@ public class RetrofitLibrary {
                         ForecastAdapter adapter = new ForecastAdapter(days, context); // create adapter and move data in as parameter
                         recyclerView.setAdapter(adapter);
 
-                        broadcastProgressBarAlert(context, "fcast");
+                        //broadcastProgressBarAlert(context, "fcast");
+                        broadcastCallCompleteAlert(context, "fcast");
 
                     } else {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherForecastDataByDay() : call is not successful; no data found");
@@ -358,7 +377,7 @@ public class RetrofitLibrary {
         context.sendBroadcast(i);
 
     }
-
+/*
     private static void broadcastProgressBarAlert(Context context, String type) {
 
         Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastProgressBarAlert(): sending 'STOP_PROGRESS_BAR' for type " + type));
@@ -368,7 +387,7 @@ public class RetrofitLibrary {
         context.sendBroadcast(i);
 
     }
-
+*/
     private static void broadcastCallCompleteAlert(Context context, String type) {
 
         Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastCallCompleteAlert(): sending 'CALL_COMPLETE' for type " + type));

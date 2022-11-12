@@ -16,9 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dennis_brink.android.myweatherapp.AppConfig;
+import com.dennis_brink.android.myweatherapp.Application;
 import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
+import com.dennis_brink.android.myweatherapp.ILocationListener;
 import com.dennis_brink.android.myweatherapp.INetworkStateListener;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
+import com.dennis_brink.android.myweatherapp.LocationLibrary;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
 import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
@@ -27,7 +30,7 @@ import com.dennis_brink.android.myweatherapp.model_day.Day;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentForecast extends Fragment implements IWeatherListener, INetworkStateListener {
+public class FragmentForecast extends Fragment implements ILocationListener, IWeatherListener, INetworkStateListener {
 
     RecyclerView rvForecast;
     Receiver receiver = null;
@@ -36,6 +39,8 @@ public class FragmentForecast extends Fragment implements IWeatherListener, INet
     private boolean lConnectionLost = false;
     private TextView txtApiTimeStamp;
 
+    LocationLibrary locationLibrary = new LocationLibrary();;
+
     public static FragmentForecast newInstance() {
         return new FragmentForecast();
     }
@@ -43,6 +48,7 @@ public class FragmentForecast extends Fragment implements IWeatherListener, INet
     @Override
     public void onResume() { // load data here for continued fresh data
         super.onResume();
+        /*
         Log.d("DENNIS_B", "FragmetForecast.onResume(): Connection available " + AppConfig.getInstance().hasConnectionOnStartup());
         if(AppConfig.getInstance().hasConnectionOnStartup() && !lConnectionLost) {
             progressBarForecast.setVisibility(View.VISIBLE);
@@ -57,17 +63,29 @@ public class FragmentForecast extends Fragment implements IWeatherListener, INet
                 imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
             }
         }
+        */
     }
 
     @Override
     public void onStart() {
+
         super.onStart();
+
         if(receiver == null){
+            Log.d("DENNIS_B", "FragmentForecast.onStart(): registering receiver and filters");
             receiver = new Receiver();
             receiver.setWeatherListener(this);
+            receiver.setLocationListener(this);
             receiver.setNetworkStateListener(this);
         }
+
         getActivity().registerReceiver(receiver, getFilter());
+
+        locationLibrary.setupLocationListener(Application.getContext());
+        locationLibrary.getCurrentLocation(Application.getContext());
+
+        Log.d("DENNIS_B", "FragmentForecast.onStart(): done");
+
     }
 
     @Override
@@ -89,8 +107,8 @@ public class FragmentForecast extends Fragment implements IWeatherListener, INet
     private IntentFilter getFilter(){
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("LOCAL_WEATHER_DATA_ERROR"); // only register receiver for this event
-        intentFilter.addAction("STOP_PROGRESS_BAR");
         intentFilter.addAction("CALL_COMPLETE");
+        intentFilter.addAction("LOCATION_CHANGED");
         intentFilter.addAction("NETWORK_CONNECTION_LOST");
         intentFilter.addAction("NETWORK_CONNECTION_AVAILABLE");
         return intentFilter;
@@ -117,7 +135,8 @@ public class FragmentForecast extends Fragment implements IWeatherListener, INet
                 AppConfig.getInstance().setConnectionOnStartup(true);
                 imageViewNoNetworkForecast.setVisibility(View.INVISIBLE);
                 progressBarForecast.setVisibility(View.VISIBLE);
-                RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity());
+                //RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity(), 0, 0);
+                locationLibrary.getCurrentLocation(Application.getContext());
                 break;
         }
     }
@@ -130,7 +149,7 @@ public class FragmentForecast extends Fragment implements IWeatherListener, INet
             ApplicationLibrary.getErrorAlertDialog(text, getActivity()).show();
         }
     }
-
+/*
     @Override
     public void stopProgressBar(String type) {
         Log.d("DENNIS_B", "FragmentForecast.stopProgressBar() receiver reached with type: " + type);
@@ -140,9 +159,21 @@ public class FragmentForecast extends Fragment implements IWeatherListener, INet
         txtApiTimeStamp.setText(ApplicationLibrary.getTodayDateTime());
 
     }
-
+*/
     @Override
     public void callComplete(String type) {
+        Log.d("DENNIS_B", "FragmentForecast.callComplete() receiver reached with type: " + type);
 
+        progressBarForecast.setVisibility(View.INVISIBLE);
+        rvForecast.setVisibility(View.VISIBLE);
+        txtApiTimeStamp.setText(ApplicationLibrary.getTodayDateTime());
+
+    }
+
+    @Override
+    public void locationChanged(double lat, double lon) {
+        Log.d("DENNIS_B", "FragmentForecast.locationChanged receiver reached --> getWeatherForecastDataByDay()");
+        progressBarForecast.setVisibility(View.VISIBLE);
+        RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity(), lat, lon);
     }
 }

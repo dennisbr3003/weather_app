@@ -20,24 +20,17 @@ public class LocationLibrary {
 
     LocationManager locationManager;
     LocationListener locationListener;
-    Context activityContext;
 
-    public LocationLibrary(Context activityContext) {
-        this.activityContext = activityContext;
-        /*
-        if (!checkLocationAccessPermission()) {
-            Log.d(TAG, "LocationLibrary.Constructor() no access granted to device location");
-            // check if we can get permission
-        }
-        */
+    public LocationLibrary() {
+
+        locationManager = (LocationManager) Application.getContext().getSystemService(Context.LOCATION_SERVICE);
+
     }
 
     @SuppressLint("MissingPermission")
     public void setupLocationListener(Context context) {
 
         Log.d(TAG, "LocationLibrary.setupLocationListener()");
-
-        locationManager = (LocationManager) Application.getContext().getSystemService(Context.LOCATION_SERVICE);
 
         locationListener = new LocationListener() {
             @Override
@@ -54,37 +47,18 @@ public class LocationLibrary {
             public void onLocationChanged(@NonNull android.location.Location location) { // user location
 
                 Log.d(TAG, "LocationLibrary.setupLocationListener().onLocationChanged(): location changed");
+                broadcastLocationChanged(context, location.getLatitude(), location.getLongitude());
 
-                AppConfig.getInstance().setLatitude(location.getLatitude());
-                AppConfig.getInstance().setLongitude(location.getLongitude());
-
-                // send message that the location changed
-                broadcastLocationChanged(context);
             }
         };
 
         Log.d(TAG, "LocationLibrary.setupLocationListener(): setup listener to check every 500m by 50m");
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 50, locationListener);
+
         Log.d(TAG, "LocationLibrary.setupLocationListener() completed");
 
     }
-/*
-    private boolean checkLocationAccessPermission() {
-        try {
-            if (ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(Application.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "LocationLibrary.checkLocationAccessPermission() : access to location denied");
-                return false;
-            } else {
-                Log.d(TAG, "LocationLibrary.checkLocationAccessPermission() : access to location granted");
-                return true;
-            }
-        }catch(Exception e){
-            Log.d(TAG, "LocationLibrary.checkLocationAccessPermission() : error (Exception) : " + e.getLocalizedMessage());
-            return false;
-        }
-    }
-*/
+
     @SuppressLint("MissingPermission")
     public void getCurrentLocation(Context context) {
 
@@ -94,12 +68,7 @@ public class LocationLibrary {
         if(location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
 
             Log.d(TAG, "LocationLibrary.getCurrentLocation(): last known location is usable, age <= 2 mins");
-
-            AppConfig.getInstance().setLatitude(location.getLatitude());
-            AppConfig.getInstance().setLongitude(location.getLongitude());
-
-            // send message that the location changed
-            broadcastLocationChanged(context);
+            broadcastLocationChanged(context, location.getLatitude(), location.getLongitude());
 
         } else { // location data is too old, get a new location
 
@@ -123,10 +92,12 @@ public class LocationLibrary {
 
     }
 
-    private void broadcastLocationChanged(Context context) {
+    private void broadcastLocationChanged(Context context, double lat, double lon ) {
         Log.d(TAG, "LocationLibrary.broadcastLocationChanged(): sending 'LOCATION_CHANGED'");
         Intent i = new Intent();
         i.setAction("LOCATION_CHANGED");
+        i.putExtra("lat", lat);
+        i.putExtra("lon", lon);
         Application.getContext().sendBroadcast(i);
     }
 

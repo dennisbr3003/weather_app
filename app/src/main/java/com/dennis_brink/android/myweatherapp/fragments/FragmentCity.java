@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class FragmentCity extends Fragment implements IWeatherListener, INetworkStateListener {
 
-    private ImageView imageViewIconCity, imageViewHumidity, imageViewSearch;
+    private ImageView imageViewIconCity, imageViewHumidity, imageViewSearch ,imageViewSunRiseCity, imageViewSunSetCity;
     private EditText editTextSearch;
     private View viewIbeam;
     Receiver receiver = null;
@@ -96,6 +96,8 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         imageViewSearch = view.findViewById(R.id.imageViewIconCitySearch);
         editTextSearch = view.findViewById(R.id.editTextSearch);
         viewIbeam = view.findViewById(R.id.viewIBeam0);
+        imageViewSunRiseCity = view.findViewById(R.id.imageViewSunRiseCity);
+        imageViewSunSetCity = view.findViewById(R.id.imageViewSunSetCity);
 
         setupWeatherData(view);
         setupRating(view);
@@ -109,7 +111,8 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
     private void setupWeatherData(View view){
 
         TextView textHumidityCity, textMaxTempCity, textMinTempCity, textPressureCity,
-                 textWindCity, textCityCity, textTempCity, textConditionCity, textViewApi12;
+                 textWindCity, textCityCity, textTempCity, textConditionCity, textViewApi12,
+                 textSunRiseCity, textSunSetCity;
 
         textCityCity = view.findViewById(R.id.textViewCityCity);
         textConditionCity = view.findViewById(R.id.textViewWeaterConditionCity);
@@ -120,6 +123,8 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         textPressureCity = view.findViewById(R.id.textViewPressureCity);
         textTempCity = view.findViewById(R.id.textViewTemperatureCity);
         textViewApi12 = view.findViewById(R.id.textViewApi12);
+        textSunRiseCity = view.findViewById(R.id.textViewSunRiseCity);
+        textSunSetCity = view.findViewById(R.id.textViewSunSetCity);
 
         textCityCity.setText("");
         textConditionCity.setText("");
@@ -129,6 +134,8 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         textMinTempCity.setText("");
         textPressureCity.setText("");
         textTempCity.setText("");
+        textSunRiseCity.setText("");
+        textSunSetCity.setText("");
         textViewApi12.setText("none");
 
         weatherData.put("city", textCityCity);
@@ -143,7 +150,8 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         weatherData.put("maxtemp", textMaxTempCity);
         weatherData.put("mintemp", textMinTempCity);
         weatherData.put("timestamp", textViewApi12);
-
+        weatherData.put("sunset", textSunSetCity);
+        weatherData.put("sunrise", textSunRiseCity);
     }
 
     private void setupWeatherLabels(View view){
@@ -172,7 +180,7 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         imageViewSearch.setOnClickListener(view1 -> {
             if(!(editTextSearch.getText().toString().isEmpty() || editTextSearch.getText().toString().equals("City"))){
                 RetrofitLibrary.getWeatherDataCity(editTextSearch.getText().toString(), rating, weatherData, imageViewIconCity, getContext());
-                // if all went well we should end up in "stopProgressBar()". The screen will be set up from there
+                // if all went well we should end up in "callComplete()". The screen will be set up from there
 
             }
             editTextSearch.setText("");
@@ -213,17 +221,14 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
     }
 
     @Override
-    public void stopProgressBar(String type) {
-        Log.d("DENNIS_B", "FragmentCity.stopProgressBar() receiver reached for type " + type);
-    }
-
-    @Override
     public void callComplete(String type) {
         Log.d("DENNIS_B", "FragmentCity.callComplete(type) receiver reached with " + type);
         if(type.equals("city")){
             ApplicationLibrary.showTextViews(weatherLabels);
             ApplicationLibrary.showRating(rating);
             imageViewHumidity.setVisibility(View.VISIBLE);
+            imageViewSunRiseCity.setVisibility(View.VISIBLE);
+            imageViewSunSetCity.setVisibility(View.VISIBLE);
             viewIbeam.setVisibility(View.VISIBLE);
         }
     }

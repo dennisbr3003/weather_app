@@ -11,9 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -25,24 +22,18 @@ import android.widget.Toast;
 
 import com.dennis_brink.android.myweatherapp.model_config.OpenWeatherConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class MainActivity extends AppCompatActivity implements ILocationListener {
+public class MainActivity extends AppCompatActivity {
 
-    private TabLayout tabLayout;
-    private ViewPager2 viewPager2;
     private final String TAG = "DENNIS_B";
-
-    LocationLibrary locationLibrary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +57,18 @@ public class MainActivity extends AppCompatActivity implements ILocationListener
 
     private void initWeatherAppFragments(){
 
+        TabLayout tabLayout;
+        ViewPager2 viewPager2;
+
+        //LocationLibrary locationLibrary;
+        //locationLibrary = new LocationLibrary(); // used in initWeatherApp
+        //locationLibrary.setupLocationListener(this);
+
         if(!getAPIkey()){ // API key is essential to getting data
             finish();
         }
 
         setupNetworkStateListener();
-        initWeatherAppLocation();
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.viewPagerMain);
@@ -159,16 +156,6 @@ public class MainActivity extends AppCompatActivity implements ILocationListener
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private void initWeatherAppLocation(){
-
-        locationLibrary = new LocationLibrary(this); // used in initWeatherApp
-
-        locationLibrary.setupLocationListener(this);
-        locationLibrary.getCurrentLocation(this);
-
-    }
-
-
     private void setupNetworkStateListener(){
 
         Log.d("DENNIS_B", "MainActivity.setupNetworkStateListener()");
@@ -202,15 +189,10 @@ public class MainActivity extends AppCompatActivity implements ILocationListener
 
     private static void broadcastNetworkState(Context context, String state) {
 
-        Log.d("DENNIS_B", String.format("MainActivity.broadcastNetworkState(): sending " + state));
+        Log.d("DENNIS_B", "MainActivity.broadcastNetworkState(): sending " + state);
         Intent i = new Intent();
         i.setAction(state);
         context.sendBroadcast(i);
-
-    }
-
-    @Override
-    public void locationChanged() {
 
     }
 
