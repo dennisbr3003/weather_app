@@ -22,6 +22,7 @@ import com.dennis_brink.android.myweatherapp.ILocationListener;
 import com.dennis_brink.android.myweatherapp.INetworkStateListener;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
 import com.dennis_brink.android.myweatherapp.LocationLibrary;
+import com.dennis_brink.android.myweatherapp.MainActivity;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
 import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
@@ -36,7 +37,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
     RecyclerView rvForecastHour;
     TextView txtBusy;
 
-    LocationLibrary locationLibrary = new LocationLibrary();
+    //LocationLibrary locationLibrary = new LocationLibrary();
 
     private ImageView imageViewIcon, imageViewHumidityLocal, imageViewNoNetworkLocal,imageViewSunRise,imageViewSunSet;
     private ProgressBar progressBar;
@@ -65,8 +66,9 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
             }
             getActivity().registerReceiver(receiver, getFilter());
 
-            locationLibrary.setupLocationListener(Application.getContext()); // this will work for all fragments
-            locationLibrary.getCurrentLocation(Application.getContext());
+            //locationLibrary.setupLocationListener(Application.getContext()); // this will work for all fragments
+            //locationLibrary.getCurrentLocation(Application.getContext());
+            ((MainActivity) getActivity()).getCurrentLocation();
 
         } catch (Exception e){
             Log.d("DENNIS_B", "FragmentMain.onStart() Exception: "+ e.getLocalizedMessage());
@@ -272,7 +274,8 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
             case "NETWORK_CONNECTION_AVAILABLE":
                 AppConfig.getInstance().setConnectionOnStartup(true);
                 //setupListenersAndInitData();
-                locationLibrary.getCurrentLocation(Application.getContext());
+                //locationLibrary.getCurrentLocation(Application.getContext());
+                ((MainActivity) getActivity()).getCurrentLocation();
                 break;
         }
     }

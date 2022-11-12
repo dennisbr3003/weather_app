@@ -16,19 +16,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dennis_brink.android.myweatherapp.AppConfig;
-import com.dennis_brink.android.myweatherapp.Application;
 import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
 import com.dennis_brink.android.myweatherapp.ILocationListener;
 import com.dennis_brink.android.myweatherapp.INetworkStateListener;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
-import com.dennis_brink.android.myweatherapp.LocationLibrary;
+import com.dennis_brink.android.myweatherapp.MainActivity;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
 import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
-import com.dennis_brink.android.myweatherapp.model_day.Day;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FragmentForecast extends Fragment implements ILocationListener, IWeatherListener, INetworkStateListener {
 
@@ -39,7 +34,7 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
     private boolean lConnectionLost = false;
     private TextView txtApiTimeStamp;
 
-    LocationLibrary locationLibrary = new LocationLibrary();;
+    //LocationLibrary locationLibrary = new LocationLibrary();;
 
     public static FragmentForecast newInstance() {
         return new FragmentForecast();
@@ -81,9 +76,9 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
 
         getActivity().registerReceiver(receiver, getFilter());
 
-        locationLibrary.setupLocationListener(Application.getContext());
-        locationLibrary.getCurrentLocation(Application.getContext());
-
+        //locationLibrary.setupLocationListener(Application.getContext());
+        //locationLibrary.getCurrentLocation(Application.getContext());
+        ((MainActivity) getActivity()).getCurrentLocation();
         Log.d("DENNIS_B", "FragmentForecast.onStart(): done");
 
     }
@@ -136,7 +131,8 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
                 imageViewNoNetworkForecast.setVisibility(View.INVISIBLE);
                 progressBarForecast.setVisibility(View.VISIBLE);
                 //RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity(), 0, 0);
-                locationLibrary.getCurrentLocation(Application.getContext());
+                //locationLibrary.getCurrentLocation(Application.getContext());
+                ((MainActivity) getActivity()).getCurrentLocation();
                 break;
         }
     }

@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "DENNIS_B";
+    LocationLibrary locationLibrary = new LocationLibrary();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +61,11 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout;
         ViewPager2 viewPager2;
 
-        //LocationLibrary locationLibrary;
-        //locationLibrary = new LocationLibrary(); // used in initWeatherApp
-        //locationLibrary.setupLocationListener(this);
-
         if(!getAPIkey()){ // API key is essential to getting data
             finish();
         }
+
+        locationLibrary.setupLocationListener(Application.getContext()); // this will work for all fragments
 
         setupNetworkStateListener();
 
@@ -194,6 +193,10 @@ public class MainActivity extends AppCompatActivity {
         i.setAction(state);
         context.sendBroadcast(i);
 
+    }
+
+    public void getCurrentLocation(){
+        locationLibrary.getCurrentLocation(Application.getContext());
     }
 
 }
