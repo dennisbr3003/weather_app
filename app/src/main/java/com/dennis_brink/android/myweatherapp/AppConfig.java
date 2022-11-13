@@ -5,19 +5,25 @@ import static android.content.res.Configuration.UI_MODE_NIGHT_NO;
 import static android.content.res.Configuration.UI_MODE_NIGHT_UNDEFINED;
 import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
 
+import android.content.res.AssetManager;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
+import com.dennis_brink.android.myweatherapp.model_config.OpenWeatherConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class AppConfig {
 
     private static AppConfig instance = new AppConfig();
+    private static String TAG = "DENNIS_B";
 
-    private String api_key;
+    private String api_key = "";
     private static boolean darkThemeActive = false;
-    private static boolean connectionOnStartup = false;
-    private double latitude = 0;
-    private double longitude = 0;
 
     private AppConfig() {
 
@@ -29,23 +35,53 @@ public class AppConfig {
     }
 
     public String getApi_key() {
+        if (this.api_key.equals("")) {
+            this.api_key = getApiKey();
+        }
         return api_key;
-    }
-
-    public void setApi_key(String api_key) {
-        this.api_key = api_key;
     }
 
     public boolean isDarkThemeActive() {
         return darkThemeActive;
     }
 
-    public boolean hasConnectionOnStartup() {
-        return connectionOnStartup;
-    }
+    private static String getApiKey(){
+        String line;
+        InputStream in;
 
-    public void setConnectionOnStartup(boolean connectionOnStartup) {
-        AppConfig.connectionOnStartup = connectionOnStartup;
+        AssetManager am = Application.getContext().getAssets();
+        try {
+            in = am.open("datasource.config.json");
+        } catch (IOException e) {
+            Log.d(TAG, "MainActivity.getApiKey(): error (IOException) : " + e.getLocalizedMessage());
+            return "";
+        }
+
+        StringBuilder str = new StringBuilder();
+
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            while((line = br.readLine()) != null){
+                str.append(line.replaceAll("\\s", ""));
+            }
+        } catch(Exception e) {
+            Log.d(TAG, "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage() + e.getMessage());
+            return "";
+        }
+
+        Log.d(TAG, "MainActivity.getApiKey(): string : " + str);
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            OpenWeatherConfig openWeatherConfig = mapper.readValue(str.toString(), OpenWeatherConfig.class);
+            //AppConfig.getInstance().setApi_key(openWeatherConfig.getDatasource().getKey());
+            return openWeatherConfig.getDatasource().getKey();
+        } catch (JsonProcessingException e) {
+            Log.d(TAG, "MainActivity.getApiKey(): error (JsonProcessingException) : " + e.getLocalizedMessage());
+            return "";
+        } catch (Exception e) {
+            Log.d(TAG, "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage());
+            return "";
+        }
     }
 
     private static boolean getDarkThemeActive() {
@@ -67,28 +103,10 @@ public class AppConfig {
 
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
     @Override
     public String toString() {
         return "AppConfig{" +
                 "api_key='" + api_key + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
                 '}';
     }
 }

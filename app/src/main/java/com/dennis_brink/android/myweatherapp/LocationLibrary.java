@@ -28,7 +28,7 @@ public class LocationLibrary {
     }
 
     @SuppressLint("MissingPermission")
-    public void setupLocationListener(Context context) {
+    public void setupLocationListener() {
 
         Log.d(TAG, "LocationLibrary.setupLocationListener()");
 
@@ -47,7 +47,7 @@ public class LocationLibrary {
             public void onLocationChanged(@NonNull android.location.Location location) { // user location
 
                 Log.d(TAG, "LocationLibrary.setupLocationListener().onLocationChanged(): location changed");
-                broadcastLocationChanged(context, location.getLatitude(), location.getLongitude());
+                broadcastLocationChanged(Application.getContext(), location.getLatitude(), location.getLongitude());
 
             }
         };

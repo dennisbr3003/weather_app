@@ -37,8 +37,6 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
     RecyclerView rvForecastHour;
     TextView txtBusy;
 
-    //LocationLibrary locationLibrary = new LocationLibrary();
-
     private ImageView imageViewIcon, imageViewHumidityLocal, imageViewNoNetworkLocal,imageViewSunRise,imageViewSunSet;
     private ProgressBar progressBar;
     private View viewIbeam;
@@ -65,10 +63,13 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
                 receiver.setLocationListener(this);
             }
             getActivity().registerReceiver(receiver, getFilter());
-
-            //locationLibrary.setupLocationListener(Application.getContext()); // this will work for all fragments
-            //locationLibrary.getCurrentLocation(Application.getContext());
-            ((MainActivity) getActivity()).getCurrentLocation();
+            if(((MainActivity) getActivity()).isNetworkAvailable()) { // this will take 10 sec. without network.
+                                                                      // Only execute on startup with network
+                ((MainActivity) getActivity()).getCurrentLocation();
+            } else {
+                imageViewNoNetworkLocal.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+            }
 
         } catch (Exception e){
             Log.d("DENNIS_B", "FragmentMain.onStart() Exception: "+ e.getLocalizedMessage());
@@ -83,7 +84,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
 
     private IntentFilter getFilter(){
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("LOCAL_WEATHER_DATA_ERROR"); // only register receiver for this event
+        intentFilter.addAction("LOCAL_WEATHER_DATA_ERROR");
         intentFilter.addAction("NETWORK_CONNECTION_LOST");
         intentFilter.addAction("NETWORK_CONNECTION_AVAILABLE");
         intentFilter.addAction("LOCATION_CHANGED");
@@ -123,7 +124,6 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
         setupWeatherData(view);
         setupRating(view);
         setupWeatherLabels(view);
-        ApplicationLibrary.hideRating(rating);
         return view;
 
     }
@@ -158,7 +158,6 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
         textSunSet.setText("");
         textApi.setText("none");
 
-
         weatherData.put("city", textCity);
         weatherData.put("condition", textCondition);
         weatherData.put("humidity", textHumidity);
@@ -173,6 +172,8 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
         weatherData.put("timestamp", textApi);
         weatherData.put("sunset", textSunSet);
         weatherData.put("sunrise", textSunRise);
+
+        ApplicationLibrary.hideTextViews(weatherData);
 
     }
 
@@ -193,8 +194,9 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
 
         ApplicationLibrary.setColorTextView(weatherLabels);
 
-    }
+        ApplicationLibrary.hideTextViews(weatherLabels);
 
+    }
 
     private void setupRating(View view){
 
@@ -212,17 +214,20 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
         rating.add(imgStar4);
         rating.add(imgStar5);
 
+        ApplicationLibrary.hideRating(rating);
+
     }
 
     private void getWeatherData(double lat, double lon){
 
         Log.d("DENNIS_B", "FragmentMain.getWeatherData()");
-        if(AppConfig.getInstance().hasConnectionOnStartup()) {
+        if(((MainActivity) getActivity()).isNetworkAvailable()) {
             // network available
             imageViewNoNetworkLocal.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
             if(lat == 0 && lon == 0){
                 // we do not have a location yet; inform the user
+                Log.d("DENNIS_B", "ok3");
                 txtBusy.setVisibility(View.VISIBLE);
             }
             else {
@@ -256,6 +261,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
         Log.d("DENNIS_B", "FragmentMain.callComplete() receiver reached with type: " + type);
         if (type.equals("main")) {
             progressBar.setVisibility(View.INVISIBLE);
+            ApplicationLibrary.showTextViews(weatherData);
             ApplicationLibrary.showTextViews(weatherLabels);
             ApplicationLibrary.showRating(rating);
             imageViewHumidityLocal.setVisibility(View.VISIBLE);
@@ -272,9 +278,6 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
             case "NETWORK_CONNECTION_LOST":
                 break;
             case "NETWORK_CONNECTION_AVAILABLE":
-                AppConfig.getInstance().setConnectionOnStartup(true);
-                //setupListenersAndInitData();
-                //locationLibrary.getCurrentLocation(Application.getContext());
                 ((MainActivity) getActivity()).getCurrentLocation();
                 break;
         }

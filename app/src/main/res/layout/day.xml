@@ -33,6 +33,17 @@
             android:background="@color/trans_babyblue55"
             android:elevation="3dp">
 
+            <View
+                android:id="@+id/viewIBeam3"
+                android:layout_width="60dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/black"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewMinDay" />
+
             <ImageView
                 android:id="@+id/imageViewIconDay"
                 android:layout_width="50dp"
@@ -48,7 +59,7 @@
                 android:id="@+id/textViewTemp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="5dp"
                 android:text="@string/_15_c"
                 android:textSize="34sp"
@@ -72,7 +83,7 @@
                 android:id="@+id/textViewDayDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="12dp"
                 android:text="Today"
                 android:textSize="16sp"
@@ -110,7 +121,7 @@
                 android:id="@+id/textViewConditionDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="5dp"
                 android:text="TextView"
                 android:textSize="16sp"
@@ -153,6 +164,32 @@
                 app:layout_constraintVertical_bias="0.333" />
 
             <TextView
+                android:id="@+id/textViewPressureDay"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="10dp"
+                android:text="1033"
+                android:textAlignment="viewEnd"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewHumidityDay"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="5dp"
+                android:text="75%"
+                android:textAlignment="viewEnd"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/textViewPressureDay"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
                 android:id="@+id/textViewRainDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -165,15 +202,25 @@
                 app:layout_constraintStart_toStartOf="@+id/imageViewRainDay"
                 tools:visibility="invisible" />
 
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="33dp"
-                android:layout_marginEnd="16dp"
-                android:text="---------------"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/imageViewPressure"
+                android:layout_width="20dp"
+                android:layout_height="18dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textViewPressureDay"
+                app:srcCompat="@drawable/path995" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="7dp"
+                app:layout_constraintBottom_toTopOf="@+id/imageViewPressure"
+                app:layout_constraintEnd_toStartOf="@+id/textViewHumidityDay"
+                app:srcCompat="@drawable/path2763" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

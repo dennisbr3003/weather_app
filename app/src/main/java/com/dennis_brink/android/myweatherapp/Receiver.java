@@ -8,16 +8,11 @@ import android.util.Log;
 public class Receiver extends BroadcastReceiver {
 
     private IWeatherListener weatherListener;
-    private IPermissionListener permissionListener;
     private INetworkStateListener networkStateListener;
     private ILocationListener wlocationListener;
 
     public void setWeatherListener(IWeatherListener weatherListener){
         this.weatherListener = weatherListener;
-    }
-
-    public void setPermissionListener(IPermissionListener permissionListener){
-        this.permissionListener = permissionListener;
     }
 
     public void setNetworkStateListener(INetworkStateListener networkStateListener){
@@ -44,13 +39,7 @@ public class Receiver extends BroadcastReceiver {
                 weatherListener.showErrorMessage(intent.getStringExtra("text"), intent.getStringExtra("type"));
             }
         }
-
-        if(intent.getAction().equals("LOCATION_PERMISSION_GRANTED")) {
-            if (permissionListener != null) {
-                permissionListener.afterPermissionGranted();
-            }
-        }
-
+        
         if(intent.getAction().equals("NETWORK_CONNECTION_LOST") || intent.getAction().equals("NETWORK_CONNECTION_AVAILABLE")) {
             if (networkStateListener != null) {
                 networkStateListener.networkStateChanged(intent.getAction());

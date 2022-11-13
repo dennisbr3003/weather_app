@@ -7,34 +7,19 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.net.NetworkRequest;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.dennis_brink.android.myweatherapp.model_config.OpenWeatherConfig;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "DENNIS_B";
     LocationLibrary locationLibrary = new LocationLibrary();
+    NetworkLibrary networkLibrary = new NetworkLibrary();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +46,14 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout;
         ViewPager2 viewPager2;
 
-        if(!getAPIkey()){ // API key is essential to getting data
+        if(AppConfig.getInstance().getApi_key().equals("")){
+            Log.d(TAG, "MainActivity.initWeatherAppFragments(): no api key configured" );
+            Toast.makeText(this, "Api key is not found, not configured or corrupted", Toast.LENGTH_SHORT).show();
             finish();
         }
 
-        locationLibrary.setupLocationListener(Application.getContext()); // this will work for all fragments
-
-        setupNetworkStateListener();
+        locationLibrary.setupLocationListener(); // this will work for all fragments
+        networkLibrary.setupNetworkStateListener();
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.viewPagerMain);
@@ -91,47 +77,6 @@ public class MainActivity extends AppCompatActivity {
         });
         tabLayoutMediator.attach();
 
-        AppConfig.getInstance().setConnectionOnStartup(isNetworkAvailable());
-    }
-
-    private boolean getAPIkey(){
-
-        String line;
-        InputStream in;
-
-        AssetManager am = getAssets();
-        try {
-            in = am.open("datasource.config.json");
-        } catch (IOException e) {
-            Log.d(TAG, "MainActivity.getApiKey(): error (IOException) : " + e.getLocalizedMessage());
-            return false;
-        }
-
-        StringBuilder str = new StringBuilder();
-
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-            while((line = br.readLine()) != null){
-                str.append(line.replaceAll("\\s", ""));
-            }
-        } catch(Exception e) {
-            Log.d(TAG, "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage() + e.getMessage());
-            return false;
-        }
-
-        Log.d(TAG, "MainActivity.getApiKey(): string : " + str);
-
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            OpenWeatherConfig openWeatherConfig = mapper.readValue(str.toString(), OpenWeatherConfig.class);
-            AppConfig.getInstance().setApi_key(openWeatherConfig.getDatasource().getKey());
-            return true;
-        } catch (JsonProcessingException e) {
-            Log.d(TAG, "MainActivity.getApiKey(): error (JsonProcessingException) : " + e.getLocalizedMessage());
-            return false;
-        } catch (Exception e) {
-            Log.d(TAG, "MainActivity.getApiKey(): error (Exception) : " + e.getLocalizedMessage());
-            return false;
-        }
     }
 
     @Override
@@ -148,55 +93,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
-        Log.d("DENNIS_B", "MainActivity.isNetworkAvailable() : " + (activeNetworkInfo != null && activeNetworkInfo.isConnected()));
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    private void setupNetworkStateListener(){
-
-        Log.d("DENNIS_B", "MainActivity.setupNetworkStateListener()");
-
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-
-        NetworkRequest.Builder builder = new NetworkRequest.Builder();
-
-        builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-        builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
-
-        ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
-
-            @Override
-            public void onAvailable(Network network) {
-                super.onAvailable(network);
-                Log.d("DENNIS_B", "Connection available");
-                broadcastNetworkState(getApplicationContext(), "NETWORK_CONNECTION_AVAILABLE");
-            }
-
-            @Override
-            public void onLost(Network network) {
-                super.onLost(network);
-                Log.d("DENNIS_B", "Connection lost");
-                broadcastNetworkState(getApplicationContext(), "NETWORK_CONNECTION_LOST");
-            }
-
-        };
-        cm.registerNetworkCallback(builder.build(), callback);
-    }
-
-    private static void broadcastNetworkState(Context context, String state) {
-
-        Log.d("DENNIS_B", "MainActivity.broadcastNetworkState(): sending " + state);
-        Intent i = new Intent();
-        i.setAction(state);
-        context.sendBroadcast(i);
-
-    }
-
     public void getCurrentLocation(){
         locationLibrary.getCurrentLocation(Application.getContext());
+    }
+
+    public boolean isNetworkAvailable(){
+        return networkLibrary.isNetworkAvailable();
     }
 
 }

@@ -46,9 +46,11 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
         holder.textViewDate.setText(data.get(position).getDate());
         holder.textViewDayDisplay.setText(data.get(position).getDay_display());
         holder.textViewTemp.setText(ApplicationLibrary.formatToDecimals(data.get(position).getTemp(), 1) + " °C");
-        holder.textViewMin.setText(ApplicationLibrary.formatToDecimals(data.get(position).getMintemp(), 1) + " °");
-        holder.textViewMax.setText(ApplicationLibrary.formatToDecimals(data.get(position).getMaxtemp(), 1) + " °");
+        holder.textViewMin.setText(ApplicationLibrary.formatToDecimals(data.get(position).getMintemp(), 1) + "°");
+        holder.textViewMax.setText(ApplicationLibrary.formatToDecimals(data.get(position).getMaxtemp(), 1) + "°");
+        holder.textViewPressureDay.setText(""+data.get(position).getPressure());
         holder.textViewConditionDay.setText(data.get(position).getCondition());
+        holder.textViewHumidityDay.setText(data.get(position).getHumidity()+ "%");
         if(data.size() > 5) {
             holder.imageViewCardBackground.setImageResource(imageList.get(position));
         } else {
@@ -93,7 +95,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView textViewDate, textViewTemp, textViewDayDisplay, textViewMin, textViewMax,
-        textViewConditionDay, textViewWindDay, textViewRainDay;
+        textViewConditionDay, textViewWindDay, textViewRainDay, textViewPressureDay, textViewHumidityDay;
         ImageView imageViewIcon,imageViewCardBackground, imageViewRainDay;
         CardView cardViewDay;
 
@@ -111,6 +113,8 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
             textViewWindDay = itemView.findViewById(R.id.textViewWindDay);
             textViewRainDay = itemView.findViewById(R.id.textViewRainDay);
             imageViewRainDay = itemView.findViewById(R.id.imageViewRainDay);
+            textViewPressureDay = itemView.findViewById(R.id.textViewPressureDay);
+            textViewHumidityDay = itemView.findViewById(R.id.textViewHumidityDay);
         }
     }
 

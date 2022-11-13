@@ -142,9 +142,6 @@ public class RetrofitLibrary {
 
                         loadValuesIntoViews(weatherData, response, icon, context, "city");
 
-                        //broadcastCallCompleteAlert(context, "city");  // this will let the fragment now the call ended correctly,
-                                                                           // stop the progressbar and show the views -- city only
-
                     } else {
                         Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataCity() : call is not successful; no data found");
                         broadcastErrorAlert(context, String.format("No new data found using '%s'", city), "city");
@@ -271,6 +268,7 @@ public class RetrofitLibrary {
 
         if (lat==0 && lon==0){
             broadcastErrorAlert(context, String.format("Error. No location was determined yet (lat = 0, lon = 0). Unable to get correct local forecast data"), "fcast");
+            return;
         }
 
         Call<OpenWeatherForecast> call = weatherApi.getWeatherForecast(lat, lon, AppConfig.getInstance().getApi_key());
@@ -291,7 +289,6 @@ public class RetrofitLibrary {
                         ForecastAdapter adapter = new ForecastAdapter(days, context); // create adapter and move data in as parameter
                         recyclerView.setAdapter(adapter);
 
-                        //broadcastProgressBarAlert(context, "fcast");
                         broadcastCallCompleteAlert(context, "fcast");
 
                     } else {
@@ -377,17 +374,7 @@ public class RetrofitLibrary {
         context.sendBroadcast(i);
 
     }
-/*
-    private static void broadcastProgressBarAlert(Context context, String type) {
 
-        Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastProgressBarAlert(): sending 'STOP_PROGRESS_BAR' for type " + type));
-        Intent i = new Intent();
-        i.setAction("STOP_PROGRESS_BAR");
-        i.putExtra("type", type);
-        context.sendBroadcast(i);
-
-    }
-*/
     private static void broadcastCallCompleteAlert(Context context, String type) {
 
         Log.d("DENNIS_B", String.format("RetrofitLibrary.broadcastCallCompleteAlert(): sending 'CALL_COMPLETE' for type " + type));

@@ -31,34 +31,10 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
     Receiver receiver = null;
     private ImageView imageViewNoNetworkForecast;
     private ProgressBar progressBarForecast;
-    private boolean lConnectionLost = false;
     private TextView txtApiTimeStamp;
-
-    //LocationLibrary locationLibrary = new LocationLibrary();;
 
     public static FragmentForecast newInstance() {
         return new FragmentForecast();
-    }
-
-    @Override
-    public void onResume() { // load data here for continued fresh data
-        super.onResume();
-        /*
-        Log.d("DENNIS_B", "FragmetForecast.onResume(): Connection available " + AppConfig.getInstance().hasConnectionOnStartup());
-        if(AppConfig.getInstance().hasConnectionOnStartup() && !lConnectionLost) {
-            progressBarForecast.setVisibility(View.VISIBLE);
-            RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity());
-        } else {
-            try {
-                if (rvForecast!=null && rvForecast.getAdapter().getItemCount() == 0) { // empty
-                    imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
-                }
-            }catch(Exception e){
-                // no recyclerview is shown yet
-                imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
-            }
-        }
-        */
     }
 
     @Override
@@ -76,9 +52,13 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
 
         getActivity().registerReceiver(receiver, getFilter());
 
-        //locationLibrary.setupLocationListener(Application.getContext());
-        //locationLibrary.getCurrentLocation(Application.getContext());
-        ((MainActivity) getActivity()).getCurrentLocation();
+        if(((MainActivity) getActivity()).isNetworkAvailable()) {
+            ((MainActivity) getActivity()).getCurrentLocation(); // this will take 10 sec. without network.
+                                                                 // Only execute on startup with network
+        } else {
+            progressBarForecast.setVisibility(View.INVISIBLE);
+            imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
+        }
         Log.d("DENNIS_B", "FragmentForecast.onStart(): done");
 
     }
@@ -119,19 +99,28 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
         }
     }
 
+    private void getWeatherData(double lat, double lon){
+
+        Log.d("DENNIS_B", "FragmentForecast.getWeatherData()");
+        if(((MainActivity) getActivity()).isNetworkAvailable()) {
+            // network available
+            imageViewNoNetworkForecast.setVisibility(View.INVISIBLE);
+            progressBarForecast.setVisibility(View.VISIBLE);
+            RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity(), lat, lon);
+        } else {
+            progressBarForecast.setVisibility(View.INVISIBLE);
+            imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
+        }
+
+    }
+
     @Override
     public void networkStateChanged(String state) {
         Log.d("DENNIS_B", "FragmentForecast.networkStateChanged(state) receiver reached with " + state);
         switch(state){
             case "NETWORK_CONNECTION_LOST":
-                lConnectionLost = true;
                 break;
             case "NETWORK_CONNECTION_AVAILABLE":
-                AppConfig.getInstance().setConnectionOnStartup(true);
-                imageViewNoNetworkForecast.setVisibility(View.INVISIBLE);
-                progressBarForecast.setVisibility(View.VISIBLE);
-                //RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity(), 0, 0);
-                //locationLibrary.getCurrentLocation(Application.getContext());
                 ((MainActivity) getActivity()).getCurrentLocation();
                 break;
         }
@@ -142,34 +131,22 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
         Log.d("DENNIS_B", "FragmentForecast.showErrorMessage() receiver reached for type: " + type);
         if(type.equals("fcast")) {  // listeners are the same in all fragments type makes sure
             // the correct dialog is shown, and only once (bit tricky)
+            progressBarForecast.setVisibility(View.INVISIBLE);
             ApplicationLibrary.getErrorAlertDialog(text, getActivity()).show();
         }
     }
-/*
-    @Override
-    public void stopProgressBar(String type) {
-        Log.d("DENNIS_B", "FragmentForecast.stopProgressBar() receiver reached with type: " + type);
 
-        progressBarForecast.setVisibility(View.INVISIBLE);
-        rvForecast.setVisibility(View.VISIBLE);
-        txtApiTimeStamp.setText(ApplicationLibrary.getTodayDateTime());
-
-    }
-*/
     @Override
     public void callComplete(String type) {
         Log.d("DENNIS_B", "FragmentForecast.callComplete() receiver reached with type: " + type);
-
         progressBarForecast.setVisibility(View.INVISIBLE);
         rvForecast.setVisibility(View.VISIBLE);
         txtApiTimeStamp.setText(ApplicationLibrary.getTodayDateTime());
-
     }
 
     @Override
     public void locationChanged(double lat, double lon) {
         Log.d("DENNIS_B", "FragmentForecast.locationChanged receiver reached --> getWeatherForecastDataByDay()");
-        progressBarForecast.setVisibility(View.VISIBLE);
-        RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity(), lat, lon);
+        getWeatherData(lat, lon);
     }
 }

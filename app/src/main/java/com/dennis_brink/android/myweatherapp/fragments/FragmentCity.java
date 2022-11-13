@@ -21,6 +21,7 @@ import com.dennis_brink.android.myweatherapp.AppConfig;
 import com.dennis_brink.android.myweatherapp.ApplicationLibrary;
 import com.dennis_brink.android.myweatherapp.INetworkStateListener;
 import com.dennis_brink.android.myweatherapp.IWeatherListener;
+import com.dennis_brink.android.myweatherapp.MainActivity;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
 import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
@@ -56,7 +57,7 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
         }
         getActivity().registerReceiver(receiver, getFilter());
 
-        if(!AppConfig.getInstance().hasConnectionOnStartup()){
+        if(!((MainActivity) getActivity()).isNetworkAvailable()){
             disableSearchField();
         }
 
@@ -255,7 +256,6 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
                 disableSearchField();
                 break;
             case "NETWORK_CONNECTION_AVAILABLE":
-                AppConfig.getInstance().setConnectionOnStartup(true);
                 enableSearchField();
                 break;
         }

@@ -42,6 +42,14 @@ public class ApplicationLibrary {
 
     }
 
+    public static void hideTextViews(Map<String, TextView> textViews){
+
+        for(TextView x : textViews.values()){
+            x.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
     public static void hideRating(ArrayList<ImageView> rating){
 
         for(ImageView x : rating){
