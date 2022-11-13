@@ -2,6 +2,10 @@ package com.dennis_brink.android.myweatherapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,7 +19,9 @@ import com.dennis_brink.android.myweatherapp.model_forecast.OpenWeatherForecast;
 import com.dennis_brink.android.myweatherapp.model_weather.OpenWeatherMap;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -23,6 +29,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RetrofitLibrary {
+
+    private static Map<String, byte[]> bCache = new HashMap<>();
 
     private static String getPollutionData(double lat, double lon, ArrayList<ImageView>rating, Context context) {
 
@@ -165,6 +173,13 @@ public class RetrofitLibrary {
 
     private static void loadValuesIntoViews(Map<String, TextView> weatherData, Response<OpenWeatherMap> response, ImageView icon, Context context, String type){
 
+        try {
+            bCache = FileHelper.readData(Application.getContext());
+            Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): cached icons " + bCache.size());
+        } catch(Exception e){
+            Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews: exception reading cached icons " + e.getLocalizedMessage());
+        }
+
         weatherData.get("city").setText(response.body().getName() + ", " + response.body().getSys().getCountry());
         weatherData.get("condition").setText(response.body().getWeather().get(0).getDescription());
         weatherData.get("humidity").setText(response.body().getMain().getHumidity() + "%");
@@ -195,26 +210,49 @@ public class RetrofitLibrary {
         }
         weatherData.get("sunset").setText(ApplicationLibrary.getTime(time_timezone));
 
-        String iconCode = response.body().getWeather().get(0).getIcon();
+        String fIcon = response.body().getWeather().get(0).getIcon();
 
-        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() icon: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");
+        Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): icon: " + "https://openweathermap.org/img/wn/" + fIcon + "@2x.png");
 
-        Picasso.get().load("https://openweathermap.org/img/wn/" + iconCode + "@2x.png")
-                .into(icon, new com.squareup.picasso.Callback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() weather icon loaded: " + "https://openweathermap.org/img/wn/" + iconCode + "@2x.png");
-                        //broadcastProgressBarAlert(context, type);
-                        broadcastCallCompleteAlert(context, type);
-                    }
+        if(!bCache.containsKey(fIcon)) {
+            Picasso.get().load("https://openweathermap.org/img/wn/" + fIcon + "@2x.png")
+                    .into(icon, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): weather icon loaded: " + "https://openweathermap.org/img/wn/" + fIcon + "@2x.png");
 
-                    @Override
-                    public void onError(Exception e) {
-                        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather icon: " + e.getLocalizedMessage());
-                        icon.setImageResource(R.mipmap.image870);
-                        broadcastCallCompleteAlert(context, type);
-                    }
-                });
+                            Drawable d = icon.getDrawable();
+                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            byte[] bIcon = stream.toByteArray();
+                            bCache.put(fIcon, bIcon);
+
+                            FileHelper.writeData(bCache, Application.getContext());
+
+                            Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): weather icon cached with key: " + fIcon);
+
+                            broadcastCallCompleteAlert(context, type);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): error loading weather icon: " + e.getLocalizedMessage());
+                            icon.setImageResource(R.mipmap.image870);
+                            broadcastCallCompleteAlert(context, type);
+                        }
+                    });
+        } else {
+
+            byte[] bIcon = bCache.get(fIcon);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bIcon, 0, bIcon.length);
+            icon.setImageBitmap(bitmap);
+
+            Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): weather icon loaded from bCache: " + fIcon);
+
+            broadcastCallCompleteAlert(context, type);
+
+        }
     }
 
     public static void getWeatherForecastData(double lat, double lon, RecyclerView recyclerView, Context context){

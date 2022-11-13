@@ -1,6 +1,10 @@
 package com.dennis_brink.android.myweatherapp;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +17,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapter.ViewHolder> {
 
     private List<com.dennis_brink.android.myweatherapp.model_forecast.List> data;
+    private Map<String, byte[]> bCache = new HashMap<>();
 
     DateFormatSymbols symbols = new DateFormatSymbols(new Locale("en"));
     String dayShortNames[] = symbols.getShortWeekdays();
@@ -29,7 +37,14 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
 
     public ForecastHourAdapter(List<com.dennis_brink.android.myweatherapp.model_forecast.List> data) {
         this.data = data;
+        try {
+            bCache = FileHelper.readData(Application.getContext());
+            Log.d("DENNIS_B", "ForecastHourAdapter.constructor(): cached icons " + bCache.size());
+        } catch(Exception e){
+            Log.d("DENNIS_B", "ForecastHourAdapter.constructor(): exception reading cached icons " + e.getLocalizedMessage());
+        }
         initDates();
+
     }
 
     @NonNull
@@ -47,7 +62,7 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
         String stime = ApplicationLibrary.getTime(data.get(position).getDt());
         int weekday = ApplicationLibrary.getDayOfWeek(data.get(position).getDt());
 
-        Log.d("DENNIS_B", "date " + sdate + " weekday " + weekday);
+        Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): date " + sdate + " weekday " + weekday);
 
         if(sdate.equals(today)){
             if(position == 0){
@@ -69,24 +84,46 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
         holder.textViewTempHour.setText(ApplicationLibrary.formatToDecimals(data.get(position).getMain().getTemp(), 1) + "°");
         holder.textViewWindHour.setText("(" + data.get(position).getWind().getDeg() +  "°)");
         holder.textViewWindForceHour.setText(""+ApplicationLibrary.formatToDecimals(data.get(position).getWind().getSpeed(), 1));
-        String icon = data.get(position).getWeather().get(0).getIcon();
-        String finalIcon = icon;
 
-// todo caching of images
-        Picasso.get().load("https://openweathermap.org/img/wn/" + icon + "@2x.png")
-                .into(holder.imageViewIconHour, new com.squareup.picasso.Callback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal() weather icon loaded: " + "https://openweathermap.org/img/wn/" + finalIcon + "@2x.png");
-                    }
+        String fIcon = data.get(position).getWeather().get(0).getIcon();
 
-                    @Override
-                    public void onError(Exception e) {
-                        Log.d("DENNIS_B", "RetrofitLibrary.getWeatherDataLocal(): error loading weather icon: " + e.getLocalizedMessage());
-                        holder.imageViewIconHour.setImageResource(R.mipmap.image870);
-                    }
-                });
+        if(!bCache.containsKey(fIcon)) {
+            Picasso.get().load("https://openweathermap.org/img/wn/" + fIcon + "@2x.png")
+                    .into(holder.imageViewIconHour, new com.squareup.picasso.Callback() {
 
+                        @Override
+                        public void onSuccess() {
+
+                            Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): weather icon loaded: " + "https://openweathermap.org/img/wn/" + fIcon + "@2x.png");
+
+                            Drawable d = holder.imageViewIconHour.getDrawable();
+                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            byte[] bIcon = stream.toByteArray();
+                            bCache.put(fIcon, bIcon);
+
+                            FileHelper.writeData(bCache, Application.getContext());
+
+                            Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): weather icon cached with key: " + fIcon);
+
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): error loading weather icon: " + e.getLocalizedMessage());
+                            holder.imageViewIconHour.setImageResource(R.mipmap.image870);
+                        }
+                    });
+        } else { // icon is cached, read that one and spare a call
+
+            byte[] bIcon = bCache.get(fIcon);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bIcon, 0, bIcon.length);
+            holder.imageViewIconHour.setImageBitmap(bitmap);
+
+            Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): weather icon loaded from bCache: " + fIcon);
+
+        }
     }
 
     @Override
@@ -110,6 +147,7 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private void initDates(){
 
         Calendar calendar = Calendar.getInstance();
@@ -122,9 +160,9 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
         calendar.add(Calendar.DATE, 1);
 
         tomorrow = String.format("%02d-%02d-%04d",
-                calendar.get(Calendar.DAY_OF_MONTH),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.YEAR));;
+                   calendar.get(Calendar.DAY_OF_MONTH),
+                   calendar.get(Calendar.MONTH) + 1,
+                   calendar.get(Calendar.YEAR));
     }
 
 }

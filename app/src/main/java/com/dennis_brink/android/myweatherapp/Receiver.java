@@ -39,7 +39,7 @@ public class Receiver extends BroadcastReceiver {
                 weatherListener.showErrorMessage(intent.getStringExtra("text"), intent.getStringExtra("type"));
             }
         }
-        
+
         if(intent.getAction().equals("NETWORK_CONNECTION_LOST") || intent.getAction().equals("NETWORK_CONNECTION_AVAILABLE")) {
             if (networkStateListener != null) {
                 networkStateListener.networkStateChanged(intent.getAction());
