@@ -30,8 +30,6 @@ import retrofit2.Response;
 
 public class RetrofitLibrary {
 
-    private static Map<String, byte[]> bCache = new HashMap<>();
-
     private static String getPollutionData(double lat, double lon, ArrayList<ImageView>rating, Context context) {
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
@@ -173,13 +171,6 @@ public class RetrofitLibrary {
 
     private static void loadValuesIntoViews(Map<String, TextView> weatherData, Response<OpenWeatherMap> response, ImageView icon, Context context, String type){
 
-        try {
-            bCache = FileHelper.readData(Application.getContext());
-            Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): cached icons " + bCache.size());
-        } catch(Exception e){
-            Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews: exception reading cached icons " + e.getLocalizedMessage());
-        }
-
         weatherData.get("city").setText(response.body().getName() + ", " + response.body().getSys().getCountry());
         weatherData.get("condition").setText(response.body().getWeather().get(0).getDescription());
         weatherData.get("humidity").setText(response.body().getMain().getHumidity() + "%");
@@ -212,26 +203,14 @@ public class RetrofitLibrary {
 
         String fIcon = response.body().getWeather().get(0).getIcon();
 
-        Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): icon: " + "https://openweathermap.org/img/wn/" + fIcon + "@2x.png");
-
-        if(!bCache.containsKey(fIcon)) {
+        if(!AppCache.getInstance().hasElement(fIcon)){
             Picasso.get().load("https://openweathermap.org/img/wn/" + fIcon + "@2x.png")
                     .into(icon, new com.squareup.picasso.Callback() {
                         @Override
                         public void onSuccess() {
                             Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): weather icon loaded: " + "https://openweathermap.org/img/wn/" + fIcon + "@2x.png");
-
-                            Drawable d = icon.getDrawable();
-                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                            byte[] bIcon = stream.toByteArray();
-                            bCache.put(fIcon, bIcon);
-
-                            FileHelper.writeData(bCache, Application.getContext());
-
+                            AppCache.getInstance().cacheElement(fIcon, icon.getDrawable());
                             Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): weather icon cached with key: " + fIcon);
-
                             broadcastCallCompleteAlert(context, type);
                         }
 
@@ -244,12 +223,8 @@ public class RetrofitLibrary {
                     });
         } else {
 
-            byte[] bIcon = bCache.get(fIcon);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bIcon, 0, bIcon.length);
-            icon.setImageBitmap(bitmap);
-
+            icon.setImageBitmap(AppCache.getInstance().loadElement(fIcon));
             Log.d("DENNIS_B", "RetrofitLibrary.loadValuesIntoViews(): weather icon loaded from bCache: " + fIcon);
-
             broadcastCallCompleteAlert(context, type);
 
         }
@@ -298,9 +273,6 @@ public class RetrofitLibrary {
     public static void getWeatherForecastDataByDay(RecyclerView recyclerView, Context context, double lat, double lon) {
 
         WeatherApi weatherApi = RetrofitWeather.getClient().create(WeatherApi.class);
-
-        //double lat = AppConfig.getInstance().getLatitude(); // contains values from main page (location = here)
-        //double lon = AppConfig.getInstance().getLongitude();
 
         Log.d("DENNIS_B", "getWeatherForecastDataByDay() lat/lon: " + lat + "/" + lon);
 

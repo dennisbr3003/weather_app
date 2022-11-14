@@ -82,23 +82,14 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
         String fIcon = data.get(position).getIcon().replaceAll("n", "d"); // always use 'day' icons because they look nicer
 
-        if(!bCache.containsKey(fIcon)) {
+        if(!AppCache.getInstance().hasElement(fIcon)) {
             Picasso.get().load("https://openweathermap.org/img/wn/" + fIcon + "@2x.png")
                     .into(holder.imageViewIcon, new com.squareup.picasso.Callback() {
                         @Override
                         public void onSuccess() {
+
                             Log.d("DENNIS_B", "ForecastAdapter.onBindViewHolder(): weather icon loaded: " + "https://openweathermap.org/img/wn/" + fIcon + "@2x.png");
-
-                            Drawable d = holder.imageViewIcon.getDrawable();
-                            Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                            byte[] bIcon = stream.toByteArray();
-                            bCache.put(fIcon, bIcon);
-
-                            FileHelper.writeData(bCache, Application.getContext());
-
-                            Log.d("DENNIS_B", "ForecastAdapter.onBindViewHolder(): weather icon cached with key: " + fIcon);
+                            AppCache.getInstance().cacheElement(fIcon, holder.imageViewIcon.getDrawable());
 
                         }
 
@@ -110,10 +101,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
                     });
         } else {
 
-            byte[] bIcon = bCache.get(fIcon);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bIcon, 0, bIcon.length);
-            holder.imageViewIcon.setImageBitmap(bitmap);
-
+            holder.imageViewIcon.setImageBitmap(AppCache.getInstance().loadElement(fIcon));
             Log.d("DENNIS_B", "ForecastAdapter.onBindViewHolder(): weather icon loaded from bCache: " + fIcon);
 
         }

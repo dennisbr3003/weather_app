@@ -28,7 +28,6 @@ import java.util.Map;
 public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapter.ViewHolder> {
 
     private List<com.dennis_brink.android.myweatherapp.model_forecast.List> data;
-    private Map<String, byte[]> bCache = new HashMap<>();
 
     DateFormatSymbols symbols = new DateFormatSymbols(new Locale("en"));
     String dayShortNames[] = symbols.getShortWeekdays();
@@ -36,13 +35,8 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
     String tomorrow = "";
 
     public ForecastHourAdapter(List<com.dennis_brink.android.myweatherapp.model_forecast.List> data) {
+
         this.data = data;
-        try {
-            bCache = FileHelper.readData(Application.getContext());
-            Log.d("DENNIS_B", "ForecastHourAdapter.constructor(): cached icons " + bCache.size());
-        } catch(Exception e){
-            Log.d("DENNIS_B", "ForecastHourAdapter.constructor(): exception reading cached icons " + e.getLocalizedMessage());
-        }
         initDates();
 
     }
@@ -50,8 +44,10 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hour, parent, false);
         return new ViewHolder(view);
+
     }
 
     @SuppressLint("DefaultLocale")
@@ -61,8 +57,6 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
         String sdate = ApplicationLibrary.getDate(data.get(position).getDt());
         String stime = ApplicationLibrary.getTime(data.get(position).getDt());
         int weekday = ApplicationLibrary.getDayOfWeek(data.get(position).getDt());
-
-        Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): date " + sdate + " weekday " + weekday);
 
         if(sdate.equals(today)){
             if(position == 0){
@@ -87,7 +81,7 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
 
         String fIcon = data.get(position).getWeather().get(0).getIcon();
 
-        if(!bCache.containsKey(fIcon)) {
+        if(!AppCache.getInstance().hasElement(fIcon)){
             Picasso.get().load("https://openweathermap.org/img/wn/" + fIcon + "@2x.png")
                     .into(holder.imageViewIconHour, new com.squareup.picasso.Callback() {
 
@@ -95,17 +89,7 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
                         public void onSuccess() {
 
                             Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): weather icon loaded: " + "https://openweathermap.org/img/wn/" + fIcon + "@2x.png");
-
-                            Drawable d = holder.imageViewIconHour.getDrawable();
-                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                            byte[] bIcon = stream.toByteArray();
-                            bCache.put(fIcon, bIcon);
-
-                            FileHelper.writeData(bCache, Application.getContext());
-
-                            Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): weather icon cached with key: " + fIcon);
+                            AppCache.getInstance().cacheElement(fIcon, holder.imageViewIconHour.getDrawable());
 
                         }
 
@@ -117,10 +101,7 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
                     });
         } else { // icon is cached, read that one and spare a call
 
-            byte[] bIcon = bCache.get(fIcon);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bIcon, 0, bIcon.length);
-            holder.imageViewIconHour.setImageBitmap(bitmap);
-
+            holder.imageViewIconHour.setImageBitmap(AppCache.getInstance().loadElement(fIcon));
             Log.d("DENNIS_B", "ForecastHourAdapter.onBindViewHolder(): weather icon loaded from bCache: " + fIcon);
 
         }
