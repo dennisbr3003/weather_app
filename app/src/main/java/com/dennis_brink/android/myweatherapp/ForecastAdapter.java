@@ -1,10 +1,6 @@
 package com.dennis_brink.android.myweatherapp;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dennis_brink.android.myweatherapp.model_day.Day;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,12 +32,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
         this.data = days;
         this.context = context;
         loadImageList();
-        try {
-            bCache = FileHelper.readData(Application.getContext());
-            Log.d("DENNIS_B", "ForecastAdapter.constructor(): cached icons " + bCache.size());
-        } catch(Exception e){
-            Log.d("DENNIS_B", "ForecastAdapter.constructor(): exception reading cached icons " + e.getLocalizedMessage());
-        }
     }
 
     @NonNull

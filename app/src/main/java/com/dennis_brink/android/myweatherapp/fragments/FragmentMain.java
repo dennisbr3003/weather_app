@@ -26,6 +26,7 @@ import com.dennis_brink.android.myweatherapp.MainActivity;
 import com.dennis_brink.android.myweatherapp.R;
 import com.dennis_brink.android.myweatherapp.Receiver;
 import com.dennis_brink.android.myweatherapp.RetrofitLibrary;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,11 +76,6 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
             Log.d("DENNIS_B", "FragmentMain.onStart() Exception: "+ e.getLocalizedMessage());
         }
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     private IntentFilter getFilter(){
@@ -267,6 +263,8 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
             imageViewHumidityLocal.setVisibility(View.VISIBLE);
             imageViewSunRise.setVisibility(View.VISIBLE);
             imageViewSunSet.setVisibility(View.VISIBLE);
+            ApplicationLibrary.setDrawableBackground(imageViewIcon);
+            ApplicationLibrary.setColorIbeam(viewIbeam);
             viewIbeam.setVisibility(View.VISIBLE);
         }
     }

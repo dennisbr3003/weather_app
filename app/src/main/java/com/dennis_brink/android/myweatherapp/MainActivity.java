@@ -10,6 +10,8 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
@@ -62,15 +64,19 @@ public class MainActivity extends AppCompatActivity {
         viewPager2.setAdapter(adapter);
 
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager2, true, true, (tab, position) -> {
+
             switch(position) {
                 case 0:
                     tab.setCustomView(R.layout.tab0);
+                    ApplicationLibrary.setTabTextColor((TextView) tab.getCustomView().findViewById(R.id.textViewTab0));
                     break;
                 case 1:
                     tab.setCustomView(R.layout.tab1);
+                    ApplicationLibrary.setTabTextColor((TextView) tab.getCustomView().findViewById(R.id.textViewTab1));
                     break;
                 case 2:
                     tab.setCustomView(R.layout.tab2);
+                    ApplicationLibrary.setTabTextColor((TextView) tab.getCustomView().findViewById(R.id.textViewTab2));
                     break;
             }
 

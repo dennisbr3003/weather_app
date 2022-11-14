@@ -230,6 +230,8 @@ public class FragmentCity extends Fragment implements IWeatherListener, INetwork
             imageViewHumidity.setVisibility(View.VISIBLE);
             imageViewSunRiseCity.setVisibility(View.VISIBLE);
             imageViewSunSetCity.setVisibility(View.VISIBLE);
+            ApplicationLibrary.setDrawableBackground(imageViewIconCity);
+            ApplicationLibrary.setColorIbeam(viewIbeam);
             viewIbeam.setVisibility(View.VISIBLE);
         }
     }

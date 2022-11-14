@@ -2,6 +2,7 @@ package com.dennis_brink.android.myweatherapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -76,6 +77,26 @@ public class ApplicationLibrary {
 
     public static void setColorDrawable(ImageView view , int color) {
         view.setColorFilter(ContextCompat.getColor(Application.getContext(), color));
+    }
+
+    public static void setColorIbeam(View view){
+        if(AppConfig.getInstance().isDarkThemeActive()) {
+            view.setBackgroundColor(Color.WHITE);
+        }
+    }
+
+    public static void setTabTextColor(TextView view){
+        if(AppConfig.getInstance().isDarkThemeActive()) {
+            view.setTextColor(ContextCompat.getColor(Application.getContext(), R.color.White));
+        }
+    }
+
+    public static void setDrawableBackground(ImageView view){
+        if(AppConfig.getInstance().isDarkThemeActive()) {
+            view.setBackground(ContextCompat.getDrawable(Application.getContext(), R.drawable.background_forecast_night));
+        } else {
+            view.setBackground(ContextCompat.getDrawable(Application.getContext(), R.drawable.background_forecast_day));
+        }
     }
 
     public static void setColorDrawableBackgroundStroke(EditText view) {

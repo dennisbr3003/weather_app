@@ -1,10 +1,6 @@
 package com.dennis_brink.android.myweatherapp;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
-
-import java.io.ByteArrayOutputStream;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapter.ViewHolder> {
 
@@ -80,6 +72,8 @@ public class ForecastHourAdapter extends RecyclerView.Adapter<ForecastHourAdapte
         holder.textViewWindForceHour.setText(""+ApplicationLibrary.formatToDecimals(data.get(position).getWind().getSpeed(), 1));
 
         String fIcon = data.get(position).getWeather().get(0).getIcon();
+
+        ApplicationLibrary.setDrawableBackground(holder.imageViewIconHour);
 
         if(!AppCache.getInstance().hasElement(fIcon)){
             Picasso.get().load("https://openweathermap.org/img/wn/" + fIcon + "@2x.png")
