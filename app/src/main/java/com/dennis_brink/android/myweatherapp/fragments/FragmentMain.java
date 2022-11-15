@@ -68,6 +68,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
                                                                       // Only execute on startup with network
                 ((MainActivity) getActivity()).getCurrentLocation();
             } else {
+                ApplicationLibrary.setDrawableBackground(imageViewNoNetworkLocal); // day/night
                 imageViewNoNetworkLocal.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
             }
@@ -165,11 +166,12 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
 
         weatherData.put("maxtemp", textMaxTemp);
         weatherData.put("mintemp", textMinTemp);
-        weatherData.put("timestamp", textApi);
         weatherData.put("sunset", textSunSet);
         weatherData.put("sunrise", textSunRise);
 
         ApplicationLibrary.hideTextViews(weatherData);
+
+        weatherData.put("timestamp", textApi);
 
     }
 
@@ -220,7 +222,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
         if(((MainActivity) getActivity()).isNetworkAvailable()) {
             // network available
             imageViewNoNetworkLocal.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
+            //progressBar.setVisibility(View.VISIBLE);
             if(lat == 0 && lon == 0){
                 // we do not have a location yet; inform the user
                 Log.d("DENNIS_B", "ok3");
@@ -233,6 +235,7 @@ public class FragmentMain extends Fragment implements IWeatherListener, INetwork
             }
         } else {
             // no network <-- dit zal niet helemaal goed zijn vermoed ik, na laden moet er niets meer gebeuren dus ook niet dit
+            ApplicationLibrary.setDrawableBackground(imageViewNoNetworkLocal); // day/night
             imageViewNoNetworkLocal.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.INVISIBLE);
             txtBusy.setVisibility(View.INVISIBLE);

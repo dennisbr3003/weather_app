@@ -57,6 +57,7 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
                                                                  // Only execute on startup with network
         } else {
             progressBarForecast.setVisibility(View.INVISIBLE);
+            ApplicationLibrary.setDrawableBackground(imageViewNoNetworkForecast); // day/night
             imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
         }
         Log.d("DENNIS_B", "FragmentForecast.onStart(): done");
@@ -72,6 +73,8 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
         imageViewNoNetworkForecast = view.findViewById(R.id.imageViewNoNetworkForecast);
         progressBarForecast = view.findViewById(R.id.progressBarForecast);
         txtApiTimeStamp = view.findViewById(R.id.textViewApi20);
+
+        txtApiTimeStamp.setText("none");
 
         rvForecast = view.findViewById(R.id.rvDays);
         rvForecast.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -109,6 +112,7 @@ public class FragmentForecast extends Fragment implements ILocationListener, IWe
             RetrofitLibrary.getWeatherForecastDataByDay(rvForecast, getActivity(), lat, lon);
         } else {
             progressBarForecast.setVisibility(View.INVISIBLE);
+            ApplicationLibrary.setDrawableBackground(imageViewNoNetworkForecast); // day/night
             imageViewNoNetworkForecast.setVisibility(View.VISIBLE);
         }
 

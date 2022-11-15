@@ -366,7 +366,7 @@ public class RetrofitLibrary {
                     }
                 }
             } catch(Exception e){
-                Log.d("DENNIS_B", "rain not found");
+                //Log.d("DENNIS_B", "rain not found");
             }
         }
         days.add(day);
