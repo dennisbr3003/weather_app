@@ -45,10 +45,10 @@ public class LocationLibrary {
 
             @Override
             public void onLocationChanged(@NonNull android.location.Location location) { // user location
-
-                Log.d(TAG, "LocationLibrary.setupLocationListener().onLocationChanged(): location changed");
-                broadcastLocationChanged(Application.getContext(), location.getLatitude(), location.getLongitude());
-
+                if(AppConfig.getInstance().isLocationChanged(location.getLatitude(), location.getLongitude())) {
+                    Log.d(TAG, "LocationLibrary.setupLocationListener().onLocationChanged(): location changed (enough)");
+                    broadcastLocationChanged(Application.getContext(), location.getLatitude(), location.getLongitude());
+                }
             }
         };
 
@@ -68,6 +68,7 @@ public class LocationLibrary {
         if(location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
 
             Log.d(TAG, "LocationLibrary.getCurrentLocation(): last known location is usable, age <= 2 mins");
+            AppConfig.getInstance().setLocation(location.getLatitude(), location.getLongitude());
             broadcastLocationChanged(context, location.getLatitude(), location.getLongitude());
 
         } else { // location data is too old, get a new location

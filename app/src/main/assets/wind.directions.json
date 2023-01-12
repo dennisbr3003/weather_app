@@ -1,0 +1,72 @@
+{ "directions":
+  [
+    {
+      "direction": "N",
+      "degrees": 0
+    },
+    {
+      "direction": "E",
+      "degrees": 90
+    },
+    {
+      "direction": "S",
+      "degrees": 180
+    },
+    {
+      "direction": "W",
+      "degrees": 270
+    },
+    {
+      "direction": "NE",
+      "degrees": 45
+    },
+    {
+      "direction": "SE",
+      "degrees": 135
+    },
+    {
+      "direction": "SW",
+      "degrees": 225
+    },
+    {
+      "direction": "NW",
+      "degrees": 315
+    },
+    {
+      "direction": "NNE",
+      "degrees": 22.5
+    },
+    {
+      "direction": "ENE",
+      "degrees": 67.5
+    },
+    {
+      "direction": "ESE",
+      "degrees": 112.5
+    },
+    {
+      "direction": "SSE",
+      "degrees": 157.5
+    },
+    {
+      "direction": "SSW",
+      "degrees": 202.5
+    },
+    {
+      "direction": "WSW",
+      "degrees": 247.5
+    },
+    {
+      "direction": "WNW",
+      "degrees": 292.5
+    },
+    {
+      "direction": "NNW",
+      "degrees": 337.5
+    },
+    {
+      "direction": "N",
+      "degrees": 360
+    }
+  ]
+}

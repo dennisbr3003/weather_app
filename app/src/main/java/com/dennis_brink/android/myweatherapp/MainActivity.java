@@ -10,7 +10,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +50,12 @@ public class MainActivity extends AppCompatActivity {
         if(AppConfig.getInstance().getApi_key().equals("")){
             Log.d(TAG, "MainActivity.initWeatherAppFragments(): no api key configured" );
             Toast.makeText(this, "Api key is not found, not configured or corrupted", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        if(AppConfig.getInstance().getWindDirections()==null){
+            Log.d(TAG, "MainActivity.initWeatherAppFragments(): no wind direction data configured" );
+            Toast.makeText(this, "Wind direction data not found, not configured or corrupted", Toast.LENGTH_SHORT).show();
             finish();
         }
 

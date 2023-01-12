@@ -99,6 +99,14 @@ public class ApplicationLibrary {
         }
     }
 
+    public static void setCompassBackGround(ImageView view){
+        if(AppConfig.getInstance().isDarkThemeActive()) {
+            view.setImageResource(R.drawable.compass_base_dark);
+        } else {
+            view.setImageResource(R.drawable.compass_base_standard);
+        }
+    }
+
     public static void setColorDrawableBackgroundStroke(EditText view) {
         Drawable background = view.getBackground();
         if (background instanceof GradientDrawable) {
@@ -177,6 +185,9 @@ public class ApplicationLibrary {
     public static double formatToDecimals(double number, int decimals){
         String sx="";
         switch(decimals){
+            case 0:
+                sx= String.format("%.0f", number);
+                break;
             case 1:
                 sx= String.format("%.1f", number);
                 break;
@@ -187,6 +198,21 @@ public class ApplicationLibrary {
         sx = sx.replaceAll(",", ".");
         double d = Double.parseDouble(sx);
         return d;
+    }
+    public static String formatDoubleToStringWithDecimals(double number, int decimals){
+        String sx="";
+        switch(decimals){
+            case 0:
+                sx= String.format("%.0f", number);
+                break;
+            case 1:
+                sx= String.format("%.1f", number);
+                break;
+            case 2:
+                sx= String.format("%.2f", number);
+                break;
+        }
+        return sx.replaceAll(",", ".");
     }
 
 }
