@@ -26,7 +26,7 @@
                 android:id="@+id/textViewHourDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:text="Today"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -36,17 +36,39 @@
                 android:id="@+id/imageViewIconHour"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textViewHour"
                 app:srcCompat="@mipmap/image2579" />
 
+            <ImageView
+                android:id="@+id/imageViewCompassHour"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="5dp"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.516"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/compass_base_standard" />
+
+            <ImageView
+                android:id="@+id/imageViewCompassNeedleHour"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageViewCompassHour"
+                app:layout_constraintEnd_toEndOf="@+id/imageViewCompassHour"
+                app:layout_constraintHorizontal_bias="0.516"
+                app:layout_constraintStart_toStartOf="@+id/imageViewCompassHour"
+                app:layout_constraintTop_toTopOf="@+id/imageViewCompassHour"
+                app:srcCompat="@drawable/compass_needle_blue_dark" />
+
             <TextView
                 android:id="@+id/textViewConditionHour"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="5dp"
                 android:text="TextView"
                 android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -70,13 +92,14 @@
                 android:id="@+id/textViewHour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:text="Hour"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textViewHourDate" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
                 android:layout_width="55dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -112,7 +135,7 @@
                 android:id="@+id/textViewTempHour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="5dp"
                 android:text="TextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
