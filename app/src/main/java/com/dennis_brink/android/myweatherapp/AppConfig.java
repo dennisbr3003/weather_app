@@ -74,25 +74,28 @@ public class AppConfig {
 
     public boolean isLocationChanged(double lat, double lon){
 
-/*
-2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): this.lat 0.0
-2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): this.lon 0.0
-2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lat 51.457395
-2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon 5.637906666666667
-2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) 51.457395
-2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lan diff (bigdecimal) 5.637906666666667
-2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff > 0.0005 1
-2023-01-12 01:46:48.108 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lan diff > 0.0005 1
+        /*
+            2023-01-12 01:46:48.107 10124-10124 DENNIS_B
+            MainActivity.isLocationChanged(): this.lat 0.0
+            MainActivity.isLocationChanged(): this.lon 0.0
+            MainActivity.isLocationChanged(): lat 51.457395
+            MainActivity.isLocationChanged(): lon 5.637906666666667
+            MainActivity.isLocationChanged(): lon diff (bigdecimal) 51.457395
+            MainActivity.isLocationChanged(): lan diff (bigdecimal) 5.637906666666667
+            MainActivity.isLocationChanged(): lon diff > 0.0005 1
+            MainActivity.isLocationChanged(): lan diff > 0.0005 1
 
-2023-01-12 01:46:48.246 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): this.lat 51.457395
-2023-01-12 01:46:48.246 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): this.lon 5.637906666666667
-2023-01-12 01:46:48.246 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lat 51.4574859
-2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon 5.6377886
-2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) 0.0000909
-2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lan diff (bigdecimal) 0.000118066666667
-2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff > 0.0005 -1
-2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lan diff > 0.0005 -1
- */
+            2023-01-12 01:46:48.246 10124-10124 DENNIS_B
+            MainActivity.isLocationChanged(): this.lat 51.457395
+            MainActivity.isLocationChanged(): this.lon 5.637906666666667
+            MainActivity.isLocationChanged(): lat 51.4574859
+            MainActivity.isLocationChanged(): lon 5.6377886
+            MainActivity.isLocationChanged(): lon diff (bigdecimal) 0.0000909
+            MainActivity.isLocationChanged(): lan diff (bigdecimal) 0.000118066666667
+            MainActivity.isLocationChanged(): lon diff > 0.0005 -1
+            MainActivity.isLocationChanged(): lan diff > 0.0005 -1
+        */
+
         BigDecimal c = BigDecimal.valueOf(this.lat).subtract(BigDecimal.valueOf(lat));
         BigDecimal d = BigDecimal.valueOf(this.lon).subtract(BigDecimal.valueOf(lon));
         
@@ -108,6 +111,7 @@ public class AppConfig {
         this.lat = lat;
         this.lon = lon;
 
+        // check if lat or lon is changed more then the default deviation allowed
         if ((c.abs().compareTo(BigDecimal.valueOf(0.0005)) > 0) || (d.abs().compareTo(BigDecimal.valueOf(0.0005)) > 0) ){
             return true;
         } else {

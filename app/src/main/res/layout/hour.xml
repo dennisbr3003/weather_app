@@ -62,7 +62,7 @@
                 app:layout_constraintHorizontal_bias="0.516"
                 app:layout_constraintStart_toStartOf="@+id/imageViewCompassHour"
                 app:layout_constraintTop_toTopOf="@+id/imageViewCompassHour"
-                app:srcCompat="@drawable/compass_needle_blue_dark" />
+                app:srcCompat="@drawable/compass_needle_dark_180" />
 
             <TextView
                 android:id="@+id/textViewConditionHour"
