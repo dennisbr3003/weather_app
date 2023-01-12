@@ -73,24 +73,33 @@ public class AppConfig {
     }
 
     public boolean isLocationChanged(double lat, double lon){
-        // Quick 51.457492 5.6377912
-        // Actual 51.45747333333334 5.637781666666666
 
+/*
+2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): this.lat 0.0
+2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): this.lon 0.0
+2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lat 51.457395
+2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon 5.637906666666667
+2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) 51.457395
+2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lan diff (bigdecimal) 5.637906666666667
+2023-01-12 01:46:48.107 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff > 0.0005 1
+2023-01-12 01:46:48.108 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lan diff > 0.0005 1
+
+2023-01-12 01:46:48.246 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): this.lat 51.457395
+2023-01-12 01:46:48.246 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): this.lon 5.637906666666667
+2023-01-12 01:46:48.246 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lat 51.4574859
+2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon 5.6377886
+2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) 0.0000909
+2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lan diff (bigdecimal) 0.000118066666667
+2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff > 0.0005 -1
+2023-01-12 01:46:48.247 10124-10124 DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lan diff > 0.0005 -1
+ */
+        BigDecimal c = BigDecimal.valueOf(this.lat).subtract(BigDecimal.valueOf(lat));
+        BigDecimal d = BigDecimal.valueOf(this.lon).subtract(BigDecimal.valueOf(lon));
+        
         Log.d(TAG, "MainActivity.isLocationChanged(): this.lat " + this.lat);
         Log.d(TAG, "MainActivity.isLocationChanged(): this.lon " + this.lon);
         Log.d(TAG, "MainActivity.isLocationChanged(): lat " + lat);
         Log.d(TAG, "MainActivity.isLocationChanged(): lon " + lon);
-/*
-2023-01-12 01:33:38.716  9260-9260  DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) 0.000023333333335
-2023-01-12 01:33:38.716  9260-9260  DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) -1
-2023-01-12 01:33:38.717  9260-9260  DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) -1
-2023-01-12 01:33:38.717  9260-9260  DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) -1
-2023-01-12 01:33:38.718  9260-9260  DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) -1
-2023-01-12 01:33:38.718  9260-9260  DENNIS_B                com...is_brink.android.myweatherapp  D  MainActivity.isLocationChanged(): lon diff (bigdecimal) 1
- */
-        BigDecimal c = BigDecimal.valueOf(this.lat).subtract(BigDecimal.valueOf(lat));
-        BigDecimal d = BigDecimal.valueOf(this.lon).subtract(BigDecimal.valueOf(lon));
-
         Log.d(TAG, "MainActivity.isLocationChanged(): lon diff (bigdecimal) " + c.abs());
         Log.d(TAG, "MainActivity.isLocationChanged(): lan diff (bigdecimal) " + d.abs());
         Log.d(TAG, "MainActivity.isLocationChanged(): lon diff > 0.0005 " + c.abs().compareTo(BigDecimal.valueOf(0.0005)));
